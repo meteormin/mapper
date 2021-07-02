@@ -1,0 +1,39 @@
+<?php
+
+namespace App\Libraries\MapperV2\Maps;
+
+use \{{dto}};
+use \{{entity}};
+
+class {{name}} extends Map
+{
+    /**
+     * 코드에서 클래스들의 getter, setter 유효성 체크를 위해
+     * dockblock에 type 명시 권장
+     *
+     * @param \{{dto}} $dto
+     * @param \{{entity}} $entity
+     * @return \{{entity}}
+     */
+    protected function toEntity({{dto}} $dto, {{entity}} $entity): \{{entity}}
+    {
+        // Write {{entity}} setter
+        {{toEntity}}
+        return $entity;
+    }
+
+    /**
+     * 코드에서 클래스들의 getter, setter 유효성 체크를 위해
+     * dockblock에 type 명시 권장
+     *
+     * @param \{{entity}} $entity
+     * @param \{{dto}} $dto
+     * @return \{{dto}}
+     */
+    protected function toDto(\{{entity}} $entity, \{{dto}} $dto): \{{dto}}
+    {
+        // Write {{dto}} setter
+        {{toDto}}
+        return $dto;
+    }
+}

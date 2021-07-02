@@ -1,0 +1,34 @@
+{
+  "name": "miniyus/mapper",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "miniyus",
+      "email": "miniyu97@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "7.4.*",
+    "illuminate/console": "v7.30.4",
+    "illuminate/support": "v7.30.4",
+    "illuminate/database": "v7.30.4",
+    "netresearch/jsonmapper": "^3.1",
+    "ext-json": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Miniyus\\Mapper\\": "src/"
+    },
+    "files": [
+      "vendor/illuminate/foundation/helpers.php",
+      "vendor/illuminate/support/helpers.php"
+    ]
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Miniyus\\Mapper\\Provider\\MapperServiceProvider"
+      ]
+    }
+  }
+}
