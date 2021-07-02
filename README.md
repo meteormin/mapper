@@ -1,6 +1,6 @@
 ## Mapper Version 2.x
 
-> Version 2.3
+> Version 2.4
 
 ## 기존 방식
 
@@ -180,6 +180,30 @@ instanceof'를 사용하여도 무관 합니다. 현재 mapper2.0의 구현 목�
 ~~entity->toDto() 혹은 dto->toEntity() 메서드를 통해 자동으로 매핑됩니다.~~
 ~~일치하지 않는 경우 TypeErrorException을 던집니다.~~
 
+- **DataMapper(영향가능성 낮음)**:
+  기존에 내장되어 있던 map(), mapList() 메서드의 로직을 다른 공통의 클래스로 분리 하였습니다.
+  기존 코드에 영향 없이 map(), mapList() 메서드를 사용할 수 있습니다.
+  
+- **Dynamic(영향가능성 낮음)**:
+  이는 새로 추가된 데이터 객체 유형입니다. 라라벨 Model 클래스를 모방하여 만들었습니다.
+  속성들을 매직 메서드를 활용하여 제어 합니다. 테스트 혹은 속성이 자주 변할 수 있는 경우에 사용
+
+- **CustomCollection(영향가능성 낮음)**
+  Dtos, Entities 의 공통 기능을 통합하기 위해서 해당 클래스를 상속받는다.
+  
+- **Traits(영향가능성 낮음)**:
+  공통 기능들을 가능한대로 Trait 을 활용하여 적용 시켰습니다.
+  - ReadOnlyDto: 읽기 전용 DTO
+  - ToDto: toDto() 메서드 구현
+  - ToDtos: toDtos() 메서드 구현
+  - ToEntities: toEntities() 메서드 구현
+  - ToEntity: toEntity() 메서드 구현
+  - Transformation: toArray(), toJson(), makeHidden(), makeVisible(), jsonSerialize() 구현
+
+- **Mapable(영향가능성 보통)**:
+  map(), mapList(), toArray()(Arrayable 상속), toJson()(Jsonable 상속) 메서드를 가진 interface
+  Dynamic 클래스의 추가하면서 map(), mapList(), toArray() 와 같은 Data 객체들의 공통 기능들을 묶을 interface가 필요하다고 판단하여 추가하였습니다.
+  
 - **추가 변경사항**
 > 2021.06.17<br>
 > 클로저 뿐만 아니라, callable 함수도 적용이 가능합니다.<br>
