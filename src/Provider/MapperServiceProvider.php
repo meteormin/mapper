@@ -26,11 +26,11 @@ class MapperServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__ . '../src/config/mapper.php' => config_path('mapper.php'),
+            __DIR__ . '/../src/config/mapper.php' => config_path('mapper.php'),
         ], 'config');
 
         $this->publishes([
-            __DIR__ . '../src/config/make_class.php' => config_path('make_class.php'),
+            __DIR__ . '/../src/config/make_class.php' => config_path('make_class.php'),
         ], 'config');
 
         if (!file_exists(base_path('app/Stubs'))) {
@@ -38,7 +38,7 @@ class MapperServiceProvider extends ServiceProvider
         }
 
         $this->publishes([
-            __DIR__ . '../src/config/make_class.php' => base_path('app/Stubs')
+            __DIR__ . '/../src/config/make_class.php' => base_path('app/Stubs')
         ], 'app');
 
         $this->commands(\Miniyus\Mapper\Commands\GenerateMap::class);
