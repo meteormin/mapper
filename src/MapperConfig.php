@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Libraries\MapperV2;
+namespace Miniyus\Mapper;
 
-use App\Libraries\Data\Dto;
-use App\Libraries\Data\Entity;
-use Arr;
+use Miniyus\Mapper\Data\Dto;
+use Miniyus\Mapper\Data\Entity;
+use Illuminate\Support\Arr;
 use Illuminate\Contracts\Support\Arrayable;
 
 /**
