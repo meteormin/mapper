@@ -20,8 +20,6 @@
       "Miniyus\\Mapper\\": "src/"
     },
     "files": [
-      "vendor/illuminate/foundation/helpers.php",
-      "vendor/illuminate/support/helpers.php"
     ]
   },
   "extra": {
