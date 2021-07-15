@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'stub_path' => 'app/Stubs',
+    'stub_path' => 'stubs',
     'save_path' => 'app',
     'json_path' => 'resources/'
 ];
