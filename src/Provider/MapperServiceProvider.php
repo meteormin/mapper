@@ -33,12 +33,12 @@ class MapperServiceProvider extends ServiceProvider
             __DIR__ . '/../config/make_class.php' => config_path('make_class.php'),
         ], 'config');
 
-        if (!file_exists(base_path('Stubs'))) {
-            mkdir(base_path('Stubs'));
+        if (!file_exists(base_path('stubs'))) {
+            mkdir(base_path('stubs'));
         }
 
         $this->publishes([
-            __DIR__ . '/../Stubs/Map.stub' => base_path('Stubs/Map.stub')
+            __DIR__ . '/../Stubs/Map.stub' => base_path('stubs/Map.stub')
         ]);
 
         $this->commands(\Miniyus\Mapper\Commands\GenerateMap::class);
