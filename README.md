@@ -1,6 +1,6 @@
 ## Mapper Version 2.x
 
-> Version 2.5.0
+> Version 2.5.x
 
 ## 기존 방식
 
