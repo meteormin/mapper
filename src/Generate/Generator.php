@@ -12,7 +12,7 @@ abstract class Generator
      *
      * @var string|null
      */
-    protected string $json;
+    protected ?string $json;
 
     /**
      * template
@@ -28,7 +28,7 @@ abstract class Generator
      */
     protected MakeClass $maker;
 
-    public function __construct(string $name, string $json)
+    public function __construct(string $name, string $json = null)
     {
         $this->name = $name;
         $this->json = $json;
