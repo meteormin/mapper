@@ -3,10 +3,15 @@
 namespace Miniyus\Mapper\Utils;
 
 use ReflectionClass;
+use ReflectionNamedType;
 use ReflectionObject;
 use ReflectionProperty;
-use Throwable;
 
+/**
+ * public이 아닌 속성정보와 데이터에 접근하기 위한 클래스
+ * 단, getter와 setter가 구현되어 있어야 함
+ * ReflectionClass 기능을 사용하여 조금 더 쉽게 사용
+ */
 /**
  * public이 아닌 속성정보와 데이터에 접근하기 위한 클래스
  * 단, getter와 setter가 구현되어 있어야 함
@@ -25,7 +30,7 @@ class Property
      *
      * @var ReflectionClass
      */
-    protected ReflectionClass $object;
+    protected ReflectionClass $reflection;
 
     /**
      * reflection properties
@@ -36,13 +41,13 @@ class Property
 
     /**
      * Property constructor.
-     * @param Object $class
+     * @param Object $object
      */
-    public function __construct(object $class)
+    public function __construct(object $object)
     {
-        $this->origin = $class;
-        $this->object = new ReflectionObject($class);
-        $this->setProperties($this->object->getProperties());
+        $this->origin = $object;
+        $this->reflection = new ReflectionObject($object);
+        $this->setProperties($this->reflection->getProperties());
     }
 
 
@@ -59,6 +64,14 @@ class Property
         }
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getProperties(): array
+    {
+        return $this->properties;
     }
 
     /**
@@ -95,7 +108,42 @@ class Property
      */
     public function hasProperty(string $key): bool
     {
-        return $this->object->hasProperty($key);
+        return $this->reflection->hasProperty($key);
+    }
+
+    /**
+     * @param string $key
+     * @return ReflectionProperty|null
+     */
+    public function getProperty(string $key): ?ReflectionProperty
+    {
+        if ($this->hasProperty($key)) {
+            $properties = $this->getProperties();
+            foreach ($properties as $property) {
+                if ($property instanceof ReflectionProperty) {
+                    if ($property->getName() == $key) {
+                        return $property;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $key
+     * @param $value
+     * @return $this
+     */
+    public function setProperty(string $key, $value): Property
+    {
+        $property = $this->getProperty($key);
+        if (!is_null($property)) {
+            $property->setValue($this->origin, $value);
+        }
+
+        return $this;
     }
 
     /**
@@ -130,5 +178,70 @@ class Property
         }
 
         return $keys;
+    }
+
+    /**
+     * @param array $defaults
+     * @return void
+     */
+    public function fillDefault(array $defaults = [])
+    {
+        foreach ($this->getProperties() as $property) {
+            if (!$property->hasType()) {
+                continue;
+            }
+
+            if ($property->isInitialized($this->origin)) {
+                continue;
+            }
+
+            $type = $property->getType();
+            if ($type instanceof ReflectionNamedType) {
+                $value = $this->getDefaultValue($type->getName());
+                if (empty($defaults)) {
+                    if (!is_null($value)) {
+                        $this->set($property->getName(), $value);
+                    } else if ($type->allowsNull()) {
+                        $this->set($property->getName(), $value);
+                    }
+
+                } else {
+                    $default = $defaults[$property->getName()];
+
+                    if (gettype($default) == gettype($value)) {
+                        $this->set($property->getName(), $default);
+                    } else {
+                        if (!is_null($value)) {
+                            $this->set($property->getName(), $value);
+                        } else if ($type->allowsNull()) {
+                            $this->set($property->getName(), $value);
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    /**
+     * @param string $type
+     * @return array|false|float|int|string|null
+     */
+    public function getDefaultValue(string $type)
+    {
+        switch ($type) {
+            case 'int':
+                return 0;
+            case 'float':
+                return 0.0;
+            case 'string':
+                return '';
+            case 'bool':
+                return false;
+            case 'array':
+                return [];
+            default:
+                return null;
+        }
     }
 }

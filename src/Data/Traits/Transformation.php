@@ -19,6 +19,16 @@ trait Transformation
     protected array $hidden = [];
 
     /**
+     * to string
+     *
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return $this->toJson();
+    }
+
+    /**
      * @param array $hidden
      * @return $this
      */
@@ -78,13 +88,11 @@ trait Transformation
     }
 
     /**
-     * to string
-     *
-     * @return string
+     * @return array
      */
-    public function __toString(): string
+    public function jsonSerialize(): array
     {
-        return $this->toJson();
+        return $this->toArray() ?? [];
     }
 
     /**
@@ -137,10 +145,20 @@ trait Transformation
     }
 
     /**
-     * @return array
+     * 초기화 되지 않은 속성을 타입에 맞춰 초기화
+     * int: 0
+     * string: ''
+     * bool: false
+     * array: []
+     * 기타: null (이 경우 nullable체크를 하여 nullable인 경우만 초기화를 해준다.)
+     * @param array $defaults
+     * @return $this
      */
-    public function jsonSerialize(): array
+    public function initialize(array $defaults = []): self
     {
-        return $this->toArray() ?? [];
+        $property = new Property($this);
+        $property->fillDefault($defaults);
+
+        return $this;
     }
 }

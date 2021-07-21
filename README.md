@@ -1,6 +1,6 @@
 ## Mapper Version 2.x
 
-> Version 2.4.7
+> Version 2.4.8
 
 ## 기존 방식
 
@@ -205,6 +205,23 @@ instanceof'를 사용하여도 무관 합니다. 현재 mapper2.0의 구현 목�
   Dynamic 클래스의 추가하면서 map(), mapList(), toArray() 와 같은 Data 객체들의 공통 기능들을 묶을 interface가 필요하다고 판단하여 추가하였습니다.
   
 - **추가 변경사항**
+
+> 2021.07.21<br>
+> Utils Property 클래스 기능 추가
+> fillDefault()
+> getDefaultValue()
+> 
+> Transformation Trait 기능 추가
+> initialize()
+> 할당되지 않은 속성에 타입 유형에 맞는 기본값으로 초기화 할 수 있습니다.
+> 
+```php
+<?php
+// initialize 메서드로 할당되지 않은 속성에 타입유형에 맞게 기본값으로 초기화
+$demo= DemoEntity::newInstance()->initialize();
+
+```
+
 > 2021.06.17<br>
 > 클로저 뿐만 아니라, callable 함수도 적용이 가능합니다.<br>
 > 콜백 파라미터에 Map 클래스의 이름(Map::class)을 보내면, config 파일에 명시 하지 않았더라도 Mapping 할 수 있습니다.(테스트에서 유용할 수 있습니다.)
