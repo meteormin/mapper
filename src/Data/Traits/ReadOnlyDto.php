@@ -4,7 +4,7 @@
 namespace Miniyus\Mapper\Data\Traits;
 
 use Miniyus\Mapper\Exceptions\DtoErrorException;
-use App\Libraries\Data\Entity;
+use Miniyus\Mapper\Data\Entity;
 use Closure;
 
 /**

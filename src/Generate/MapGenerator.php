@@ -17,9 +17,9 @@ class MapGenerator extends Generator
     /**
      * json 원본
      *
-     * @var string
+     * @var string|null
      */
-    protected string $json;
+    protected ?string $json;
 
     /**
      * \App\Libraries\Generate\MapTemplate
