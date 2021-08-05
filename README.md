@@ -167,6 +167,7 @@ class DemoDto extends Dto
 **추가로 toEntity()와 toDto() 구현 시, getter,setter를 사용하면서 PHP docblock으로 getter 및 setter의 유효성을 체크하는 것을 권장합니다. 아니면 '
 instanceof'를 사용하여도 무관 합니다. 현재 mapper2.0의 구현 목적 중 하나로 개발과정에서 발생할 수 있는 에러를 IDE를 통해 미리 방지하는 것도 포함되어 있기 때문입니다.**
 <br>
+
 - **MapperConfig(영향가능성 보통)**:
   config/mapper.php에서 원하는 값을 보다 쉽게 가져올 수 있게 해주는 클래스입니다. 더 이상 getIdentifier() 메서드를 구현할 필요가 없습니다.
   <br><br>
@@ -181,40 +182,77 @@ instanceof'를 사용하여도 무관 합니다. 현재 mapper2.0의 구현 목�
 ~~일치하지 않는 경우 TypeErrorException을 던집니다.~~
 
 - **DataMapper(영향가능성 낮음)**:
-  기존에 내장되어 있던 map(), mapList() 메서드의 로직을 다른 공통의 클래스로 분리 하였습니다.
-  기존 코드에 영향 없이 map(), mapList() 메서드를 사용할 수 있습니다.
-  
+  기존에 내장되어 있던 map(), mapList() 메서드의 로직을 다른 공통의 클래스로 분리 하였습니다. 기존 코드에 영향 없이 map(), mapList() 메서드를 사용할 수 있습니다.
+
 - **Dynamic(영향가능성 낮음)**:
-  이는 새로 추가된 데이터 객체 유형입니다. 라라벨 Model 클래스를 모방하여 만들었습니다.
-  속성들을 매직 메서드를 활용하여 제어 합니다.(테스트 혹은 속성이 자주 변할 수 있는 경우에 사용)
+  이는 새로 추가된 데이터 객체 유형입니다. 라라벨 Model 클래스를 모방하여 만들었습니다. 속성들을 매직 메서드를 활용하여 제어 합니다.(테스트 혹은 속성이 자주 변할 수 있는 경우에 사용)
 
 - **CustomCollection(영향가능성 낮음)**
   Dtos, Entities 의 공통 기능을 통합하기 위해서 해당 클래스를 상속 받습니다.
-  
+
 - **Traits(영향가능성 낮음)**:
   공통 기능들을 가능한대로 Trait 을 활용하여 적용 시켰습니다.
-  - ReadOnlyDto: 읽기 전용 DTO
-  - ToDto: toDto() 메서드 구현
-  - ToDtos: toDtos() 메서드 구현
-  - ToEntities: toEntities() 메서드 구현
-  - ToEntity: toEntity() 메서드 구현
-  - Transformation: toArray(), toJson(), makeHidden(), makeVisible(), jsonSerialize() 구현
+    - ReadOnlyDto: 읽기 전용 DTO
+    - ToDto: toDto() 메서드 구현
+    - ToDtos: toDtos() 메서드 구현
+    - ToEntities: toEntities() 메서드 구현
+    - ToEntity: toEntity() 메서드 구현
+    - Transformation: toArray(), toJson(), makeHidden(), makeVisible(), jsonSerialize() 구현
 
 - **Mapable(영향가능성 보통)**:
-  map(), mapList(), toArray()(Arrayable 상속), toJson()(Jsonable 상속) 메서드를 가진 interface
-  Dynamic 클래스의 추가하면서 map(), mapList(), toArray() 와 같은 Data 객체들의 공통 기능들을 묶을 interface가 필요하다고 판단하여 추가하였습니다.
-  
+  map(), mapList(), toArray()(Arrayable 상속), toJson()(Jsonable 상속) 메서드를 가진 interface Dynamic 클래스의 추가하면서 map(), mapList()
+  , toArray() 와 같은 Data 객체들의 공통 기능들을 묶을 interface가 필요하다고 판단하여 추가하였습니다.
+
 - **추가 변경사항**
+
+> 2021.08.05<br>
+> v2.5.5<br>
+> Transformation Trait toArray() 메서드 기본 값 설정<br>
+> 기존에는 코드에 강제로 allowNull은 false, 배열 키의 case_style은 snake_case로 고정했었는데 이 부분을 config파일을 통해서 수정할 수 있게 하였습니다.
+
+```php
+/** config/mapper.php **/
+return [
+    'transformation' => [
+        /**
+         * allow null: boolean(default: false)
+         */
+        'allow_null' => false,
+
+        /**
+         * case style: snake_case or camel_case
+         */
+        'case_style' => 'snake_case',
+    ],
+    ...
+];
+
+/** Transformation Trait toArray 메서드 일부 */
+if (config('mapper.transformation.case_style') == 'camel_case') {
+    $attributes = ArrController::camelFromArray($property->toArray());
+} else {
+    $attributes = ArrController::snakeFromArray($property->toArray());
+}
+
+if (is_null($allowNull)) {
+    $allowNull = config('mapper.transformation.allow_null');
+}
+       
+if (!$allowNull) {
+    $attributes = ArrController::exceptNull($attributes);
+}
+```
 
 > 2021.07.21<br>
 > Utils Property 클래스 기능 추가
 > fillDefault()
 > getDefaultValue()
-> 
+>
 > Transformation Trait 기능 추가
 > initialize()
 > 할당되지 않은 속성에 타입 유형에 맞는 기본값으로 초기화 할 수 있습니다.
-> 
+>
+
 ```php
 <?php
 // initialize 메서드로 할당되지 않은 속성에 타입유형에 맞게 기본값으로 초기화
@@ -225,6 +263,7 @@ $demo= DemoEntity::newInstance()->initialize();
 > 2021.06.17<br>
 > 클로저 뿐만 아니라, callable 함수도 적용이 가능합니다.<br>
 > 콜백 파라미터에 Map 클래스의 이름(Map::class)을 보내면, config 파일에 명시 하지 않았더라도 Mapping 할 수 있습니다.(테스트에서 유용할 수 있습니다.)
+
 ```php
 <?php
 // callable example
@@ -252,9 +291,10 @@ $dto = new DemoDto;
 $dto->toEntity(DemoEntity::class, DemoMap::class);
 ```
 
-  > 2021.05.21<br>
-  > Map클래스를 구현하지 않더라도 Mapping이 가능합니다.<br>
-  > 클로저를 이용하여 Mapping 가능<br>
+> 2021.05.21<br>
+> Map클래스를 구현하지 않더라도 Mapping이 가능합니다.<br>
+> 클로저를 이용하여 Mapping 가능<br>
+
 ```php
 <?php
     // 새로운 사용법

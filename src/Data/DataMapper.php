@@ -3,6 +3,8 @@
 
 namespace Miniyus\Mapper\Data;
 
+
+use ArrayAccess;
 use Miniyus\Mapper\Data\Contracts\Mapable;
 use Closure;
 use Illuminate\Support\Collection;
@@ -84,7 +86,7 @@ class DataMapper
      */
     public static function mapList($data, Arrayable $object, Closure $callback = null): Collection
     {
-        if (!$object instanceof Arrayable && !is_array($data)) {
+        if (!is_array($data) && !($data instanceof Arrayable) && !($data instanceof ArrayAccess) ) {
             throw new TypeError(get_class($object) . '은 매핑할 수 없습니다.');
         }
 

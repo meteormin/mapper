@@ -50,14 +50,23 @@ trait Transformation
     /**
      * 배열로 변환
      * $allowNull 파라미터가 true면 null인 필드도 배열로 리턴
-     * @param boolean $allowNull
+     * @param boolean|null $allowNull
      * @return array|null
+     * @version 2.5.5
      */
-    public function toArray(bool $allowNull = false): ?array
+    public function toArray(bool $allowNull = null): ?array
     {
         $property = new Property($this);
 
-        $attributes = ArrController::snakeFromArray($property->toArray());
+        if (config('mapper.transformation.case_style') == 'camel_case') {
+            $attributes = ArrController::camelFromArray($property->toArray());
+        } else {
+            $attributes = ArrController::snakeFromArray($property->toArray());
+        }
+
+        if (is_null($allowNull)) {
+            $allowNull = config('mapper.transformation.allow_null');
+        }
 
         if (!$allowNull) {
             $attributes = ArrController::exceptNull($attributes);
