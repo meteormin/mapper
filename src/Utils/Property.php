@@ -2,6 +2,8 @@
 
 namespace Miniyus\Mapper\Utils;
 
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Str;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionObject;
@@ -12,6 +14,7 @@ use ReflectionProperty;
  * 단, getter와 setter가 구현되어 있어야 함
  * ReflectionClass 기능을 사용하여 조금 더 쉽게 사용
  */
+
 /**
  * public이 아닌 속성정보와 데이터에 접근하기 위한 클래스
  * 단, getter와 setter가 구현되어 있어야 함
@@ -155,9 +158,12 @@ class Property
     {
         $arr = [];
         foreach ($this->properties as $prop) {
-            if (method_exists($this->origin, 'get' . \Str::studly($prop->getName()))) {
+            if (method_exists($this->origin, 'get' . Str::studly($prop->getName()))) {
                 if ($prop->isInitialized($this->origin)) {
-                    $arr[$prop->getName()] = $this->origin->{'get' . \Str::studly($prop->getName())}();
+                    $arr[$prop->getName()] = $this->origin->{'get' . Str::studly($prop->getName())}();
+                    if (is_object($arr[$prop->getName()])) {
+                        $arr[$prop->getName()] = (new static($arr[$prop->getName()]))->toArray();
+                    }
                 }
             }
         }
