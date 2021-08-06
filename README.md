@@ -206,7 +206,7 @@ instanceof'를 사용하여도 무관 합니다. 현재 mapper2.0의 구현 목�
 - **추가 변경사항**
 
 > 2021.08.06<br>
-> v2.5.6
+> v2.5.6<br>
 > Reflection class를 다루는 Property 클래스의 toArray() 메서드 개선
 > 속성이 객체인 경우 Property() 객체를 새로 생성하여 toArray() 메서드를 실행시켜 중첩객체까지 배열로 리턴할 수 있게 개선
 
