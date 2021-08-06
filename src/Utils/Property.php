@@ -161,9 +161,6 @@ class Property
             if (method_exists($this->origin, 'get' . Str::studly($prop->getName()))) {
                 if ($prop->isInitialized($this->origin)) {
                     $arr[$prop->getName()] = $this->origin->{'get' . Str::studly($prop->getName())}();
-                    if (is_object($arr[$prop->getName()])) {
-                        $arr[$prop->getName()] = (new static($arr[$prop->getName()]))->toArray();
-                    }
                 }
             }
         }
