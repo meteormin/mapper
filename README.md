@@ -434,7 +434,24 @@ public function mapList($parameters)
 
 ```php
 <?php
+// Mapper 클래스는 Entity, Dto에 내장되어 사용된다.
+// Entity <-> Dto 변환에 특화되어 있기 때문에, 그 외의 용도로 사용할 수 없다.
+// 객체 생성
+\Miniyus\Mapper\Mapper::newInstance();
 
+// 기타 정적 메서드
+\Miniyus\Mapper\Mapper::mappingDto($dto, $entityClassName, $callback);
+\Miniyus\Mapper\Mapper::mappingEntity($entity, $dtoClassName, $callback);
+
+# DataMapper(JsonMapper를 Wrapping)
+# JsonMapper에서 지원하지 않는 Type 지원 및 예외처리 로직을 추가했다.
+# 배열 -> 객체, 객체 -> 객체 변환을 위한 클래스
+// 첫번째 파라미터: 변환 전 데이터
+// 두번째 파라미터: 데이터를 할당 받을 객체
+// 세번째 파라미터: 콜백 함수
+// 콜백 파라미터가 있으면 콜백 함수의 내용을 실행
+// 콜백 함수가 없으면, JsonMapper::map() 기능과 동일하다
+\Miniyus\Mapper\Data\DataMapper::map($data, $object, $callback);
 ```
 
 ## Change Log
