@@ -28,8 +28,8 @@
 ## 목적
 
 라라벨 프레임워크는 유용한 프레임워크이지만, 기본적으로 연관배열의 사용을 권장합니다. 이는 생산성을 증가 시키는데 크게 기여하지만 협업 및 유지보수 관리의 어려움을 발생시킬 수 있습니다. 생산성에 영향을 최대한
-줄이면서 유지보수 관리 또한 쉽게하기 위해 view를 위한 DTO와 DB 데이터 관리를 위한 Entity객체로 분할하려고 합니다. 하지만 DTO의 경우는 사용자에게 보여주기 위한 객체이고 Entity는 DB테이블
-스키마를 그대로 가진 객체이기 때문에, 서로 속성간의 차이가 발생할 가능성이 생기고 DTO는 상황에 따라서 변경될 수 있기 때문에 둘 사이를 mapping해주는 객체가 필요하다고 판단하여 현재 mapper를
+줄이면서 유지보수 관리 또한 쉽게하기 위해 view를 위한 DTO와 DB 데이터 관리를 위한 Entity객체로 분할하려고 합니다. 하지만 DTO의 경우는 계층간 데이터 교환을 위한 객체이고 Entity는 DB테이블
+스키마를 그대로 가진 객체이기 때문에 서로 속성간의 차이가 발생할 수 있으며, Entity에 비해 상대적으로 변경사항이 많을 수 있기 때문에 두 클래스간의 변환 및 제어를 해주는 기능이 필요하다고 판단하여 현재 패키지를
 구상했습니다.
 
 ## 구조 및 용도
@@ -93,9 +93,10 @@
     - ToEntities: toEntities() 메서드 구현
     - ToEntity: toEntity() 메서드 구현
     - Transformation: toArray(), toJson(), makeHidden(), makeVisible(), jsonSerialize() 구현
-
-- **Mapable**:
-  map(), mapList(), toArray()(Arrayable 상속), toJson()(Jsonable 상속) 메서드를 가진 interface Dynamic 클래스의 추가하면서 map(), mapList()
+      <br>
+      <br>
+- **Mapable**
+  - map(), mapList(), toArray()(Arrayable 상속), toJson()(Jsonable 상속) 메서드를 가진 interface Dynamic 클래스의 추가하면서 map(), mapList()
   , toArray() 와 같은 Data 객체들의 공통 기능들을 묶을 interface가 필요하다고 판단하여 추가하였습니다.
   <br><br>
 
@@ -109,7 +110,8 @@ php artisan vendor:publish --provider="Miniyus\Mapper\Provider\MapperServiceProv
 
 # 사용법
 
-- DTO
+<details>
+<summary>DTO</summary>
 
 ```php
 <?php
@@ -237,8 +239,10 @@ $dto->makeVisible('name');
 $dto->initialize();
 
 ```
+</details>
 
-- Entity
+<details>
+<summary>Entity</summary>
 
 ```php
 <?php
@@ -287,8 +291,10 @@ $entities->toDtos(DemoDto::class);
 $dtos->toEntities(DemoEntity::class);
 
 ```
+</details>
 
-- Map
+<details>
+<summary>Map</summary>
 
 ```php
 <?php
@@ -350,8 +356,10 @@ php artisan generate:map DemoMap --json=DemoMap
   }
 }
 ```
+</details>
 
-- Dynamic
+<details>
+<summary>Dynamic</summary>
 
 ```php
 use Miniyus\Mapper\Data\Dynamic;
@@ -429,8 +437,10 @@ public function mapList($parameters)
     });
 }
 ```
+</details>
 
-- Mapper
+<details>
+<summary>Mapper</summary> 
 
 ```php
 <?php
@@ -453,8 +463,11 @@ public function mapList($parameters)
 // 콜백 함수가 없으면, JsonMapper::map() 기능과 동일하다
 \Miniyus\Mapper\Data\DataMapper::map($data, $object, $callback);
 ```
+</details>
 
 ## Change Log
+<details>
+<summary></summary>
 
 > 2021.08.20<br>
 > v2.5.8<br>
@@ -763,24 +776,4 @@ $dto->toEntity(DemoEntity::class, DemoMap::class);
     $dtos = new Dtos;
     $dtos->toEntities();
 ```
-
-### CODE
-
-- **Config**
-    - [config/mapper](src/config/mapper.php)
-    - [MapperConfig](src/MapperConfig.php)
-
-- **Mapper**
-    - [Mapper Interface](src/MapperInterface.php)
-    - [Mapper](src/Mapper.php)
-
-- **Map**
-    - [Map Interface](src/Maps/MapInterface.php)
-    - [Map](src/Maps/Map.php)
-- **Entity**
-    - [Entity](src/Data/Entity.php)
-    - [Entities](src/Data/Entities.php)
-
-- **Dto**
-    - [Dto](src/Data/Dto.php)
-    - [Dtos](src/Data/Dtos.php)
+</details>
