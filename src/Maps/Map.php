@@ -39,6 +39,7 @@ abstract class Map implements MapInterface
 
     /**
      * 구현 시, php docblock으로 실제 Entity와 Dto의 타입을 명시해야 IDE의 도움을 받을 수 있음
+     * 혹은 instanceof 를 사용할 것
      * @param Dto $dto
      * @param Entity $entity
      * @return Entity|array
@@ -47,6 +48,7 @@ abstract class Map implements MapInterface
 
     /**
      * 구현 시, php docblock으로 실제 Entity와 Dto의 타입을 명시해야 IDE의 도움을 받을 수 있음
+     * 혹은 instanceof 를 사용할 것
      * @param Entity $entity
      * @param Dto $dto
      * @return Dto|array

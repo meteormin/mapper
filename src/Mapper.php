@@ -19,6 +19,7 @@
 namespace Miniyus\Mapper;
 
 
+use InvalidArgumentException;
 use Miniyus\Mapper\Data\Traits\ToDto;
 use Miniyus\Mapper\Data\Traits\ToDtos;
 use Miniyus\Mapper\Data\Traits\ToEntities;
@@ -28,7 +29,6 @@ use Miniyus\Mapper\Maps\MapInterface;
 use Closure;
 use Illuminate\Support\Collection;
 use JsonMapper_Exception;
-use TypeError;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Contracts\Support\Arrayable;
 use Miniyus\Mapper\Data\Entity;
@@ -76,7 +76,7 @@ class Mapper implements MapperInterface, Arrayable, Jsonable
                 return;
             }
 
-            throw new TypeError('Possible parameters: Entity | Dto');
+            throw new InvalidArgumentException('Possible parameters: Entity|Dto');
         }
     }
 
@@ -134,7 +134,7 @@ class Mapper implements MapperInterface, Arrayable, Jsonable
 
         if (is_null($instance->dto) || is_null($instance->entity)) {
             if (is_null($dto)) {
-                throw new TypeError(get_class($instance->entity) . ": 매칭되는 클래스를 찾을 수 없습니다. 'config/mapper.php' 파일을 확인해주세요.");
+                throw new InvalidArgumentException(get_class($instance->entity) . ": 매칭되는 클래스를 찾을 수 없습니다. 'config/mapper.php' 파일을 확인해주세요.");
             }
             $entity = $instance->entity;
             $dto = new $dto;
@@ -159,7 +159,7 @@ class Mapper implements MapperInterface, Arrayable, Jsonable
      * @param Closure|string|null $callback
      * @return Collection|Entity|null      [return description]
      *
-     * @throws TypeError
+     * @throws InvalidArgumentException
      */
     public static function mappingDto($dto, string $entity = null, $callback = null)
     {
@@ -194,7 +194,7 @@ class Mapper implements MapperInterface, Arrayable, Jsonable
 
         if (is_null($instance->dto) || is_null($instance->entity)) {
             if (is_null($entity)) {
-                throw new TypeError(get_class($instance->dto) . ": 매칭되는 클래스를 찾을 수 없습니다. 'config/mapper.php' 파일을 확인해주세요.");
+                throw new InvalidArgumentException(get_class($instance->dto) . ": 매칭되는 클래스를 찾을 수 없습니다. 'config/mapper.php' 파일을 확인해주세요.");
             }
             $dto = $instance->dto;
             $entity = new $entity;
@@ -279,35 +279,37 @@ class Mapper implements MapperInterface, Arrayable, Jsonable
      * @param Closure|callable|string|null $callback
      * @return  Dto  [return description]
      * @throws JsonMapper_Exception
+     *  @version 2.5.8 callable 검사와 string 검사 순서 변경
      */
     protected function toDto(Entity $entity, ?Dto $dto, $callback = null): Dto
     {
-        if (count($entity->toArray()) == 0) {
+        if (is_null($entity->toArray())) {
             return $dto;
         }
 
         if (!is_null($dto) && !is_null($callback)) {
-            if (is_string($callback)) {
+            if (is_callable($callback)) {
+                $result = $callback($entity, $dto);
+                if (!($dto instanceof Dto) || is_array($result)) {
+                    $dto->map($result);
+                }
+            } else if (class_exists($callback)) {
                 /** @var Map $map */
                 $map = new $callback;
                 if ($map instanceof Map) {
                     $dto = $map->entityToDto($entity, $dto);
                 } else {
-                    throw new TypeError(get_class($map) . ': 콜백 클래스는 Map 클래스를 상속받은 클래스이여야 합니다.');
+                    throw new InvalidArgumentException(get_class($map) . ': 콜백 클래스는 Map 클래스를 상속받은 클래스이여야 합니다.');
                 }
-            } else if (is_callable($callback)) {
-                $result = $callback($entity, $dto);
-
-                if (!($dto instanceof Dto) || is_array($result)) {
-                    $dto->map($result);
-                }
+            } else {
+                throw new InvalidArgumentException(get_class($entity) . ': Dto변환 실패 $callback파라미터가 올바르지 않습니다.');
             }
         } else if (!is_null($this->map)) {
             $dto = $this->map->entityToDto($entity, $dto);
         } else if (!is_null($dto)) {
             $dto->map($entity);
         } else {
-            throw new TypeError(get_class($entity) . ': Dto변환 실패 Dto객체가 null입니다.');
+            throw new InvalidArgumentException(get_class($entity) . ': Dto변환 실패 Dto객체가 null입니다.');
         }
 
         return $dto;
@@ -341,30 +343,31 @@ class Mapper implements MapperInterface, Arrayable, Jsonable
      * @param Closure|callable|string|null $callback
      * @return Entity
      * @throws JsonMapper_Exception
+     * @version 2.5.8 callable 검사와 string 검사 순서 변경
      */
     protected function toEntity(Dto $dto, ?Entity $entity, $callback = null): Entity
     {
-        if (count($dto->toArray()) == 0) {
+        if (is_null($dto->toArray())) {
             return $entity;
         }
 
         if (!is_null($entity) && !is_null($callback)) {
-            if (is_string($callback)) {
-                /** @var Map $map */
-                $map = new $callback;
-                $entity = $map->dtoToEntity($dto, $entity);
-            } else if (is_callable($callback)) {
+            if (is_callable($callback)) {
                 $result = $callback($dto, $entity);
                 if (!($entity instanceof Entity) || is_array($result)) {
                     $entity->map($result);
                 }
+            } else if (is_string($callback)) {
+                /** @var Map $map */
+                $map = new $callback;
+                $entity = $map->dtoToEntity($dto, $entity);
             }
         } else if (!is_null($this->map)) {
             $entity = $this->map->dtoToEntity($dto, $entity);
         } else if (!is_null($entity)) {
             $entity->map($dto);
         } else {
-            throw new TypeError(get_class($entity) . ': Entity변환 실패 Entity객체가 null입니다.');
+            throw new InvalidArgumentException(get_class($entity) . ': Entity변환 실패 Entity객체가 null입니다.');
         }
 
         return $entity;

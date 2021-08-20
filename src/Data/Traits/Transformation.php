@@ -52,7 +52,7 @@ trait Transformation
      * $allowNull 파라미터가 true면 null인 필드도 배열로 리턴
      * @param boolean|null $allowNull
      * @return array|null
-     * @version 2.5.5
+     * @version 2.5.5 allow null, case style 설정 추가
      */
     public function toArray(bool $allowNull = null): ?array
     {
@@ -87,11 +87,11 @@ trait Transformation
     }
 
     /**
-     * @param int $options
-     * @param bool $allowNull
+     * @param int|string $options
      * @return string
+     * @version 2.5.8 allowNull 파라미터 제거
      */
-    public function toJson($options = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT, bool $allowNull = false): string
+    public function toJson($options = JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT): string
     {
         return json_encode($this, $options);
     }
@@ -105,51 +105,32 @@ trait Transformation
     }
 
     /**
-     * [makeHidden description]
+     * makeHidden
      * toArray() 메서드 작동 시, 숨기고 싶은 속성을 정할 수 있다
-     * @param string|array $hidden
+     * @param string|array|null $hidden
      * @return $this
+     * @version 2.5.8 작동 방식 변경
      */
-    public function makeHidden($hidden): self
+    public function makeHidden(...$hidden): self
     {
-        $collection = collect($this->hidden);
-
-        $this->hidden = $collection->merge($hidden)->all();
+        $this->hidden = array_merge(
+            $this->hidden, is_array($hidden[0]) ? $hidden[0] : $hidden
+        );
 
         return $this;
     }
 
     /**
      * toArray() 메서드 작동 시, 숨겼던 속성 항목을 다시 출력 시킬 수 있다.
-     * 파라미터를 넣지 않으면 Hidden 속성 전부를 Visible 속성으로 만들 수 있다.
      * @param string|array|null $visible
      * @return $this
+     * @version 2.5.8 작동 방식 변경
      */
-    public function makeVisible($visible = null): self
+    public function makeVisible(...$visible): self
     {
-        if (is_null($visible)) {
-            $this->hidden = [];
-            return $this;
-        }
-
-        $collection = collect($this->hidden);
-
-        $this->hidden = $collection->filter(function ($item) use ($visible) {
-            $cond = false;
-            if (is_array($visible)) {
-                foreach ($visible as $val) {
-                    if ($item != $val) {
-                        $cond = true;
-                    } else {
-                        return false;
-                    }
-                }
-                return $cond;
-            }
-
-            return $item != $visible;
-        })->all();
-
+        $this->hidden = array_diff(
+            $this->hidden, is_array($visible[0]) ? $visible[0] : $visible
+        );
         return $this;
     }
 

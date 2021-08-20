@@ -31,8 +31,8 @@ interface Mapable extends Arrayable, Jsonable
 
     /**
      * @param int $options
-     * @param false $allowNull
      * @return string
+     * @version 2.5.8 allowNull 파라미터 제거
      */
-    public function toJson($options = 0, bool $allowNull = false): string;
+    public function toJson($options = 0): string;
 }
