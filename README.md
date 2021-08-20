@@ -326,7 +326,7 @@ class DemoMap extends Map
         // Map 클래스 또한 배열 리턴이 가능하다.
         return [
             'id' => $dto->getId();
-        ]
+        ];
     }
 }
 ```
