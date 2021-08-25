@@ -3,7 +3,6 @@
 namespace Miniyus\Mapper\Data;
 
 use Miniyus\Mapper\Exceptions\DtoErrorException;
-use Miniyus\Mapper\Exceptions\EntityErrorException;
 use Miniyus\Mapper\Data\Contracts\Mapable;
 use Miniyus\Mapper\Data\Traits\ToEntity;
 use Closure;
@@ -47,9 +46,9 @@ abstract class Dto implements Mapable, JsonSerializable
     }
 
     /**
-     * @param array|Mapable|Arrayable|Jsonable|null $data
+     * @param Arrayable|Mapable|Jsonable|array|object $data
      * @param Closure|callable|null $callback
-     * @return $this|Arrayable
+     * @return $this|Mapable
      * @throws JsonMapper_Exception
      */
     public function map($data, $callback = null): Dto
@@ -60,7 +59,7 @@ abstract class Dto implements Mapable, JsonSerializable
     /**
      * @param $data
      * @param Closure|Mapable|Arrayable|callable|Jsonable|null $callback
-     * @return $this[]|Dtos
+     * @return $this[]|Dtos<$this>
      * @throws JsonMapper_Exception
      */
     public function mapList($data, $callback = null): Dtos

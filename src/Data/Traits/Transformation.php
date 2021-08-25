@@ -116,7 +116,6 @@ trait Transformation
         $this->hidden = array_merge(
             $this->hidden, is_array($hidden[0]) ? $hidden[0] : $hidden
         );
-
         return $this;
     }
 

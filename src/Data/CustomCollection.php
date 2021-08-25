@@ -4,13 +4,19 @@
 namespace Miniyus\Mapper\Data;
 
 
-use Miniyus\Mapper\Data\Traits\Transformation;
+use Miniyus\Mapper\Data\Contracts\Mapable;
 use ArrayAccess;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection;
+use Miniyus\Mapper\Data\Traits\Transformation;
 
 class CustomCollection extends Collection
 {
+    use Transformation {
+        makeHidden as traitMakeHidden;
+        makeVisible as traitMakeVisible;
+    }
+
     /**
      * @var array
      */
@@ -37,11 +43,9 @@ class CustomCollection extends Collection
      *
      * @return $this
      */
-    public function makeHidden($hidden): self
+    public function makeHidden(...$hidden): self
     {
-        $collection = collect($this->hidden);
-
-        $this->hidden = $collection->merge($hidden)->all();
+        $this->traitMakeHidden($hidden);
 
         $this->items = $this->map(function ($item) {
             if (method_exists($item, 'makeHidden')) {
@@ -67,25 +71,9 @@ class CustomCollection extends Collection
      *
      * @return $this
      */
-    public function makeVisible($visible): self
+    public function makeVisible(...$visible): self
     {
-        $collection = collect($this->hidden);
-
-        $this->hidden = $collection->filter(function ($item) use ($visible) {
-            if (is_array($visible)) {
-                $cond = false;
-                foreach ($visible as $val) {
-                    if ($item != $val) {
-                        $cond = true;
-                    } else {
-                        return false;
-                    }
-                }
-                return $cond;
-            }
-
-            return $item != $visible;
-        })->all();
+        $this->traitMakeVisible($visible);
 
         $this->items = $this->map(function ($item) {
             if (method_exists($item, 'makeVisible')) {
@@ -102,25 +90,15 @@ class CustomCollection extends Collection
      * @param bool $allowNull
      * @return array
      */
-    public function toArray(bool $allowNull = false): array
+    public function toArray(bool $allowNull = null): array
     {
         return $this->map(function ($item) use ($allowNull) {
-            if ($item instanceof Transformation) {
+            if ($item instanceof Mapable) {
                 return $item->toArray($allowNull);
             } else if ($item instanceof Arrayable) {
                 return $item->toArray();
             }
             return $item;
         })->values()->all();
-    }
-
-    /**
-     * @param int $options
-     * @param bool $allowNull
-     * @return string
-     */
-    public function toJson($options = JSON_UNESCAPED_UNICODE, bool $allowNull = false): string
-    {
-        return json_encode($this->toArray());
     }
 }

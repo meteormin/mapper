@@ -2,6 +2,7 @@
 
 namespace Miniyus\Mapper;
 
+use Miniyus\Mapper\Data\Contracts\Mapable;
 use Miniyus\Mapper\Data\Dto;
 use Miniyus\Mapper\Data\Entity;
 use Closure;
@@ -11,27 +12,28 @@ use Miniyus\Mapper\Maps\MapInterface;
 interface MapperInterface
 {
     /**
-     * @param Collection|Entity $entity
-     * @param string|null $dto
-     * @param Closure|string|null $callback
-     * @return Collection|Dto
+     * @param Mapable $object
+     * @param string|null $class
+     * @param Closure|callable|null $callback
+     * @return Mapable
      */
-    public static function mappingEntity($entity, string $dto = null, $callback = null);
+    public function map(Mapable $object, string $class = null, $callback = null): Mapable;
 
     /**
-     * @param Collection|Dto $dto
-     * @param string|null $entity
-     * @param Closure|string|null $callback
-     * @return Collection|Entity
+     *
+     * @param array|Collection<Mapable> $list
+     * @param string|null $class
+     * @param Closure|callable|null $callback
+     * @return Collection
      */
-    public static function mappingDto($dto, string $entity = null, $callback = null);
+    public function mapList($list, string $class = null, $callback = null): Collection;
 
     /**
      * get map
      *
      * @return MapInterface
      */
-    public function map(): MapInterface;
+    public function getMap(): MapInterface;
 
     /**
      * get dto

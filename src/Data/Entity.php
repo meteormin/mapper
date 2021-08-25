@@ -92,9 +92,9 @@ abstract class Entity implements Mapable, JsonSerializable
     }
 
     /**
-     * @param array|Arrayable $data
+     * @param Arrayable|Mapable|Jsonable|array|object $data
      * @param Closure|callable|null $callback
-     * @return $this|Arrayable
+     * @return $this|Mapable
      * @throws JsonMapper_Exception
      */
     public function map($data, $callback = null): Entity
@@ -105,7 +105,7 @@ abstract class Entity implements Mapable, JsonSerializable
     /**
      * @param $data
      * @param Closure|callable|null $callback
-     * @return Entities|$this[]
+     * @return Entities<$this>|$this[]
      * @throws JsonMapper_Exception
      */
     public function mapList($data, $callback = null): Entities

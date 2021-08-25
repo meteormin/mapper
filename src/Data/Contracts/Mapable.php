@@ -26,8 +26,9 @@ interface Mapable extends Arrayable, Jsonable
     /**
      * @param bool $allowNull
      * @return array
+     * @version 2.5.9 allowNull 기본 값 null
      */
-    public function toArray(bool $allowNull = false): ?array;
+    public function toArray(bool $allowNull = null): ?array;
 
     /**
      * @param int $options

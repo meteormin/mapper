@@ -159,7 +159,7 @@ abstract class Dynamic implements Mapable
      * @param bool $allowNull
      * @return array
      */
-    public function toArray(bool $allowNull = false): array
+    public function toArray(bool $allowNull = null): array
     {
         return $this->attributes;
     }
@@ -168,7 +168,7 @@ abstract class Dynamic implements Mapable
      * @param int $options
      * @return false|string
      */
-    public function toJson($options = JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES, bool $allowNull = false): string
+    public function toJson($options = JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES): string
     {
         return json_encode($this->attributes);
     }

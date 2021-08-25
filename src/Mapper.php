@@ -20,10 +20,10 @@ namespace Miniyus\Mapper;
 
 
 use InvalidArgumentException;
-use Miniyus\Mapper\Data\Traits\ToDto;
-use Miniyus\Mapper\Data\Traits\ToDtos;
-use Miniyus\Mapper\Data\Traits\ToEntities;
-use Miniyus\Mapper\Data\Traits\ToEntity;
+use JsonSerializable;
+use Miniyus\Mapper\Data\Contracts\Mapable;
+use Miniyus\Mapper\Data\Dtos;
+use Miniyus\Mapper\Data\Entities;
 use Miniyus\Mapper\Maps\Map;
 use Miniyus\Mapper\Maps\MapInterface;
 use Closure;
@@ -34,7 +34,7 @@ use Illuminate\Contracts\Support\Arrayable;
 use Miniyus\Mapper\Data\Entity;
 use Miniyus\Mapper\Data\Dto;
 
-class Mapper implements MapperInterface, Arrayable, Jsonable
+class Mapper implements MapperInterface, Arrayable, Jsonable, JsonSerializable
 {
     /**
      * dto
@@ -55,161 +55,111 @@ class Mapper implements MapperInterface, Arrayable, Jsonable
     protected ?MapInterface $map;
 
     /**
-     * 생성 시 받은 매개변수의 type에 따라 매핑 해준다.
-     * mapper는 Service 계층에서 사용하며,
-     * Service는 input,return을 DTO객체로 사용한다.
-     * repository 계층은 항상 input과 return을 Entity로 사용한다.
-     * 그 대신 repository의 로직을 간소화(DB관련 데이터 처리만)
-     *
-     * @param Entity|Dto|null $parameter
-     */
-    public function __construct($parameter = null)
-    {
-        if (!is_null($parameter)) {
-            if ($parameter instanceof Entity) {
-                $this->mappingEntity($parameter);
-                return;
-            }
-
-            if ($parameter instanceof Dto) {
-                $this->mappingDto($parameter);
-                return;
-            }
-
-            throw new InvalidArgumentException('Possible parameters: Entity|Dto');
-        }
-    }
-
-    /**
      * Undocumented function
-     * @param Entity|Dto|null $parameter
-     * @return $this
+     * @return static
      */
-    public static function newInstance($parameter = null): Mapper
+    public static function newInstance(): Mapper
     {
-        return new static($parameter);
+        return new static();
     }
 
     /**
-     * Entity를 출력 DTO로 변환하기 위해 mapping
-     *
-     * @param ToDto|ToDtos|Collection|Arrayable $entity
-     * @param string|null $dto
-     * @param Closure|string|null $callback
-     * @return  Collection|Dto|null     [return description]
-     *
+     * @param Data\Contracts\Mapable $object
+     * @param string|null $class
+     * @param Closure|callable $callback
+     * @return Mapable
+     * @throws JsonMapper_Exception
      */
-    public static function mappingEntity($entity, string $dto = null, $callback = null)
+    public function map(Mapable $object, string $class = null, $callback = null): Mapable
     {
-        $instance = self::newInstance();
-        $method = null;
-
-        if (is_array($entity)) {
-            $entity = collect($entity);
-        }
-
-        if ($entity instanceof Collection) {
-            if ($entity->count() == 0) {
-                return $entity;
+        if ($object instanceof Dto) {
+            $this->dto = $object;
+            if (is_null($class)) {
+                ['entity' => $entity, 'map' => $map] = $this->link($object);
+            } else {
+                // 입력 받은 타겟 클래스가 존재하면, config/mapper를 참조하지 않는다.
+                $entity = $class;
+                $map = null;
             }
 
-            // 첫번째 객체 기준으로 클래스 타입이 다른 값들 필터링
-            $entity = $entity->whereInstanceOf(get_class($entity->first()));
-
-            // config/mapper파일의 저장된 정보를 기준으로 연결되어 있는 클래스들 생성
-            $instance->entity = $entity;
-
-            ['dto' => $instance->dto, 'map' => $instance->map] = $instance->link($entity->first());
-
-            $method = 'toDtos';
-        }
-
-        if ($entity instanceof Entity) {
-            $instance->entity = $entity;
-
-            ['dto' => $instance->dto, 'map' => $instance->map] = $instance->link($entity);
-
-            $method = 'toDto';
-        }
-
-        if (is_null($instance->dto) || is_null($instance->entity)) {
-            if (is_null($dto)) {
-                throw new InvalidArgumentException(get_class($instance->entity) . ": 매칭되는 클래스를 찾을 수 없습니다. 'config/mapper.php' 파일을 확인해주세요.");
-            }
-            $entity = $instance->entity;
-            $dto = new $dto;
-        } else {
-            $entity = $instance->entity;
-            $dto = $instance->dto;
-        }
-
-        if (method_exists($instance, $method)) {
-            return $instance->$method($entity, $dto, $callback);
-        }
-
-        return null;
-    }
-
-    /**
-     * Dto 데이터를 model 형식에 맞게 변환
-     * Dto -> Entity
-     *
-     * @param ToEntity|ToEntities|Collection $dto [$dto description]
-     * @param string|null $entity
-     * @param Closure|string|null $callback
-     * @return Collection|Entity|null      [return description]
-     *
-     * @throws InvalidArgumentException
-     */
-    public static function mappingDto($dto, string $entity = null, $callback = null)
-    {
-        $instance = static::newInstance();
-        $method = null;
-
-        if (is_array($dto)) {
-            $dto = collect($dto);
-        }
-
-        if ($dto instanceof Collection) {
-            if ($dto->count() == 0) {
-                return $dto;
-            }
-
-            // 첫번째 객체 기준으로 클래스 타입이 다른 값들 필터링
-            $dto = $dto->whereInstanceOf(get_class($dto->first()));
-
-            // config/mapper파일의 저장된 정보를 기준으로 연결되어 있는 클래스들 생성
-            $instance->dto = $dto;
-            ['entity' => $instance->entity, 'map' => $instance->map] = $instance->link($dto->first());
-
-            $method = 'toEntities';
-        }
-
-        if ($dto instanceof Dto) {
-            $instance->dto = $dto;
-            ['entity' => $instance->entity, 'map' => $instance->map] = $instance->link($dto);
-
-            $method = 'toEntity';
-        }
-
-        if (is_null($instance->dto) || is_null($instance->entity)) {
             if (is_null($entity)) {
-                throw new InvalidArgumentException(get_class($instance->dto) . ": 매칭되는 클래스를 찾을 수 없습니다. 'config/mapper.php' 파일을 확인해주세요.");
+                throw new InvalidArgumentException(get_class($object) . ": 매칭되는 클래스를 찾을 수 없습니다. 'config/mapper.php' 파일을 확인해주세요.");
+            } else {
+                $entity = new $entity;
+                $map = is_null($map) ? $map : new $map;
             }
-            $dto = $instance->dto;
-            $entity = new $entity;
+
+            $this->entity = $entity;
+            $this->map = $map;
+
+            return $this->toEntity($object, $this->entity, $callback);
+
+        } else if ($object instanceof Entity) {
+            $this->entity = $object;
+            if (is_null($class)) {
+                ['dto' => $dto, 'map' => $map] = $this->link($object);
+            } else {
+                // 입력 받은 타겟 클래스가 존재하면, config/mapper를 참조하지 않는다.
+                $dto = $class;
+                $map = null;
+            }
+
+            if (is_null($dto)) {
+                throw new InvalidArgumentException(get_class($object) . ": 매칭되는 클래스를 찾을 수 없습니다. 'config/mapper.php' 파일을 확인해주세요.");
+            } else {
+                // 매칭되는 것이 있으면?
+                $dto = new $dto;
+                $map = is_null($map) ? $map : new $map;
+            }
+
+            $this->dto = $dto;
+            $this->map = $map;
+
+            return $this->toDto($object, $this->dto, $callback);
         } else {
-            $dto = $instance->dto;
-            $entity = $instance->entity;
+            return $object->map(new $class, $callback);
+        }
+    }
+
+    /**
+     * @param array|Collection $list
+     * @param string|null $class
+     * @param Closure|callable|null $callback
+     * @return Collection
+     * @throws JsonMapper_Exception
+     */
+    public function mapList($list, string $class = null, $callback = null): Collection
+    {
+        if (is_array($list)) {
+            if (count($list) == 0) {
+                return $list;
+            }
+            $list = collect($list);
+        } else if ($list instanceof Collection) {
+            if ($list->count() == 0) {
+                return $list;
+            }
+        } else {
+            throw new InvalidArgumentException('parameter 1 is not list... to be array|' . Collection::class);
         }
 
-        $result = null;
+        // 첫번째 객체 기준으로 클래스 타입이 다른 값들 필터링
+        $sourceType = get_class($list->first());
+        $list = $list->whereInstanceOf($sourceType);
 
-        if (method_exists($instance, $method)) {
-            $result = $instance->$method($dto, $entity, $callback);
+        if ($list->first() instanceof Dto) {
+            $rsList = Dtos::newInstance();
+        } else if ($list->first() instanceof Entity) {
+            $rsList = Entities::newInstance();
+        } else {
+            $rsList = collect();
         }
 
-        return $result;
+        foreach ($list as $obj) {
+            $rsList->add($this->map($obj, $class, $callback));
+        }
+
+        return $rsList;
     }
 
     /**
@@ -234,9 +184,9 @@ class Mapper implements MapperInterface, Arrayable, Jsonable
         ['dto' => $dto, 'entity' => $entity] = MapperConfig::findByAttribute($map);
 
         return [
-            'entity' => new $entity,
-            'dto' => new $dto,
-            'map' => new $map
+            'entity' => $entity,
+            'dto' => $dto,
+            'map' => $map
         ];
     }
 
@@ -245,7 +195,7 @@ class Mapper implements MapperInterface, Arrayable, Jsonable
      *
      * @return mapInterface
      */
-    public function map(): MapInterface
+    public function getMap(): MapInterface
     {
         return $this->map;
     }
@@ -277,9 +227,9 @@ class Mapper implements MapperInterface, Arrayable, Jsonable
      * @param Entity $entity
      * @param Dto|null $dto
      * @param Closure|callable|string|null $callback
-     * @return  Dto  [return description]
+     * @return  Dto
      * @throws JsonMapper_Exception
-     *  @version 2.5.8 callable 검사와 string 검사 순서 변경
+     * @version 2.5.8 callable 검사와 string 검사 순서 변경
      */
     protected function toDto(Entity $entity, ?Dto $dto, $callback = null): Dto
     {
@@ -316,27 +266,6 @@ class Mapper implements MapperInterface, Arrayable, Jsonable
     }
 
     /**
-     * Undocumented function
-     *
-     * @param array|Collection $entities
-     * @param Dto|null $dto
-     * @param Closure|callable|string|null $callback
-     * @return Collection
-     * @throws JsonMapper_Exception
-     */
-    protected function toDtos(Collection $entities, Dto $dto, $callback = null): Collection
-    {
-        $dtos = [];
-        if (is_array($entities) || $entities instanceof \Illuminate\Support\Collection) {
-
-            foreach ($entities as $entity) {
-                $dtos[] = $this->toDto($entity, $dto->newInstance(), $callback);
-            }
-        }
-        return $this->dto = collect($dtos);
-    }
-
-    /**
      * Dto -> Entity
      * @param Dto $dto
      * @param Entity|null $entity
@@ -347,6 +276,7 @@ class Mapper implements MapperInterface, Arrayable, Jsonable
      */
     protected function toEntity(Dto $dto, ?Entity $entity, $callback = null): Entity
     {
+        // check empty
         if (is_null($dto->toArray())) {
             return $entity;
         }
@@ -374,29 +304,9 @@ class Mapper implements MapperInterface, Arrayable, Jsonable
     }
 
     /**
-     * Undocumented function
-     *
-     * @param Collection $dtos
-     * @param Entity|null $entity
-     * @param Closure|callable|null $callback
-     * @return Collection
-     * @throws JsonMapper_Exception
-     */
-    protected function toEntities(Collection $dtos, Entity $entity, Closure $callback = null): Collection
-    {
-        $entities = [];
-        if (is_array($dtos) || $dtos instanceof \Illuminate\Support\Collection) {
-            foreach ($dtos as $dto) {
-                $entities[] = $this->toEntity($dto, $entity->newInstance(), $callback);
-            }
-        }
-        return $this->entity = collect($entities);
-    }
-
-    /**
      * 디버깅용
      *
-     * @return array  [return description]
+     * @return array
      */
     public function toArray(): array
     {
@@ -431,6 +341,14 @@ class Mapper implements MapperInterface, Arrayable, Jsonable
      */
     public function toJson($options = JSON_UNESCAPED_UNICODE): string
     {
-        return json_encode($this->toArray(), $options);
+        return json_encode($this, $options);
+    }
+
+    /**
+     * @return array|array[]
+     */
+    public function jsonSerialize(): array
+    {
+        return $this->toArray();
     }
 }

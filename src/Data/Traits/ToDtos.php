@@ -17,11 +17,14 @@ trait ToDtos
      * @param string|null $dto
      * @param Closure|callable|string|null $callback
      * @return Dtos|Dto[]
+     * @throws \JsonMapper_Exception
      */
     public function toDtos(?string $dto = null, $callback = null): Dtos
     {
-        /** @var array|ArrayAccess $results */
-        $results = Mapper::mappingEntity($this, $dto, $callback);
+        $results = Mapper::newInstance()->mapList($this, $dto, $callback);
+        if ($results instanceof Dtos) {
+            return $results;
+        }
 
         return Dtos::newInstance($results);
     }

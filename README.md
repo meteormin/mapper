@@ -1,6 +1,6 @@
 ## Mapper with Dto and Entity
 
- <img alt="Version" src="https://img.shields.io/badge/version-2.5.8-blue.svg?cacheSeconds=2592000" />
+ <img alt="Version" src="https://img.shields.io/badge/version-2.6.0-blue.svg?cacheSeconds=2592000" />
   <a href="https://php.net" target="_blank">
     <img src="https://img.shields.io/badge/php-%5E7.4.0-blue" />
   </a>
@@ -456,11 +456,18 @@ public function mapList($parameters)
 // Mapper 클래스는 Entity, Dto에 내장되어 사용된다.
 // Entity <-> Dto 변환에 특화되어 있기 때문에, 그 외의 용도로 사용할 수 없다.
 // 객체 생성
-\Miniyus\Mapper\Mapper::newInstance();
+$mapper = \Miniyus\Mapper\Mapper::newInstance();
 
-// 기타 정적 메서드
-\Miniyus\Mapper\Mapper::mappingDto($dto, $entityClassName, $callback);
-\Miniyus\Mapper\Mapper::mappingEntity($entity, $dtoClassName, $callback);
+// 단일 객체 매핑
+$mapper->map($sourceObj, $targetClass, $callback);
+
+// 리스트 객체 매핑 | array, Laravel Collection 객체 허용됨
+$mapper->mapList($sourceList, $targetClass, $callback);
+
+// 기타 정적 메서드 (제거: v2.6.0)
+// \Miniyus\Mapper\Mapper::mappingDto($dto, $entityClassName, $callback);
+// \Miniyus\Mapper\Mapper::mappingEntity($entity, $dtoClassName, $callback);
+
 
 # DataMapper(JsonMapper를 Wrapping)
 # JsonMapper에서 지원하지 않는 Type 지원 및 예외처리 로직을 추가했다.
@@ -479,6 +486,47 @@ public function mapList($parameters)
 
 <details>
 <summary>last update: 2021.08.20</summary>
+
+> 2021.08.24
+>
+> v2.6.0
+> 현재 REAME의 사용법대로 사용할 경우, 크게 변동되는 부분은 없으며
+> 별도로 Mapper 클래스 생성 혹은 정적 메서드로 사용하고 있는 경우는
+> 소스코드의 수정이 필요합니다.
+>
+> CustomCollection 수정
+>
+>> 기존 toJson() 제거
+>>
+>> Transformation Trait 사용<br>
+> > makeVisible(), makeHidden() 메서드 collection 객체에 맞춰 확장
+>
+> Mapper 및 MapperInterface 수정<br>
+>> mappingDto() 및 mappingEntity() 메서드와 생성자 로직 제거<br>
+> > mappingDto(), mappingEntity() 메서드 대신, map(),mapList() 메서드 추가<br>
+> > toEntities() 및 toDtos() 메서드 제거<br>
+> > mapping 우선순위 변경, 1.메서드 파라미터 > 2.config/mapper 설정
+>
+> DataMapper 수정<br>
+>> map() 메서드 수정, 콜백의 리턴 유형이 배열일 경우도 매핑이 가능
+
+```php
+<?php
+// 배열 리턴 예시
+$dto->map($data,function($data){
+    return [
+       'property_name'=>$data['key']
+    ];
+});
+```
+
+> Dto, Entity phpdoc 주석, 파라미터 및 리턴 타입 정리
+>
+> Dynamic, Mapable 클래스의 toArray(),toJson()의 allowNull 관련(v2.5.8) 수정사항 반영
+>
+> ToDto, ToEntity, ToDtos, ToEntities Trait 수정된 Mapper에 맞춰 수정<br>
+> 기존의 메서드들은 Mapper 클래스의 mapping{Dto|Entity} 메서드를 사용하였지만
+> 수정사항에 맞게 단일 객체 클래스들은 map() 메서드, 컬렉션 객체 클래스들은 mapList() 메서드를 사용하게 수정
 
 > 2021.08.20<br>
 > v2.5.8<br>
