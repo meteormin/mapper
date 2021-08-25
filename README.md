@@ -485,9 +485,9 @@ $mapper->mapList($sourceList, $targetClass, $callback);
 ## Change Log
 
 <details>
-<summary>last update: 2021.08.20</summary>
+<summary>last update: 2021.08.25</summary>
 
-> 2021.08.24
+> 2021.08.25
 >
 > v2.6.0
 > 현재 REAME의 사용법대로 사용할 경우, 크게 변동되는 부분은 없으며
