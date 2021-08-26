@@ -87,7 +87,6 @@ class Property
     public function get(string $key)
     {
         $getter = 'get' . ucfirst($key);
-
         if (method_exists($this->origin, $getter)) {
             return $this->origin->$getter();
         }
