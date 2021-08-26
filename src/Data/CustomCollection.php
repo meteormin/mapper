@@ -59,7 +59,7 @@ class CustomCollection extends Collection
             } else {
                 return $item;
             }
-        })->all();
+        })->values()->all();
 
         return $this;
     }
