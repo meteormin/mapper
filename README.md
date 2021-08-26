@@ -499,11 +499,20 @@ $mapper->mapList($sourceList, $targetClass, $callback);
 > 2021.08.26
 >
 > v2.6.1
-> 리플렉션 관련 사항 수정
-> 이제 getter, setter가 구현되어 있지 않더라도 값을 제어할 수 있음
+> 
+> 리플렉션 관련 사항 수정(기존 코드에는 딱히 영향 없음)
+>> 이제 getter, setter가 구현되어 있지 않더라도 값을 제어할 수 있음
+>> 여전히 toArray() 메서드는 getter를 기준으로 결과를 출력<br>
+> 
 > DataMapper::map() target class type object
+> 
 > 기타 타입 관련 주석 수정
+> 
 > Entity::toArray()의 allowNull 파라미터는 항상 true
+> 
+> CustomCollection::makeHidden() 메서드 버그 수정
+>> Colleciton::map() 메서드의 결과는 기존 index가 연관배열이 아닌 일반 배열일 경우 
+>> index가 string으로 변환되기 때문에 일반배열로 map()메서드를 사용했으면, values()->all() 메서드까지 실행시켜줘야한다.
 
 > 2021.08.25
 >
