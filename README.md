@@ -494,7 +494,7 @@ $mapper->mapList($sourceList, $targetClass, $callback);
 ## Change Log
 
 <details>
-<summary>last update: 2021.08.25</summary>
+<summary>last update: 2021.08.26</summary>
 
 > 2021.08.26
 >
