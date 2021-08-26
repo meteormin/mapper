@@ -2,7 +2,7 @@
 
 namespace Miniyus\Mapper\Utils;
 
-use Illuminate\Contracts\Support\Arrayable;
+
 use Illuminate\Support\Str;
 use ReflectionClass;
 use ReflectionNamedType;
@@ -86,7 +86,13 @@ class Property
      */
     public function get(string $key)
     {
-        return $this->origin->{'get' . ucfirst($key)}();
+        $getter = 'get' . ucfirst($key);
+
+        if (method_exists($this->origin, $getter)) {
+            return $this->origin->$getter();
+        }
+
+        return $this->getProperty($key);
     }
 
     /**
@@ -97,9 +103,13 @@ class Property
      */
     public function set(string $key, $value): Property
     {
-        $this->origin->{'set' . ucfirst($key)}($value);
+        $setter = 'set' . ucfirst($key);
+        if (method_exists($this->origin, $setter)) {
+            $this->origin->$setter($value);
+            return $this;
+        }
 
-        return $this;
+        return $this->setProperty($key, $value);
     }
 
     /**

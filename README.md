@@ -1,6 +1,6 @@
 ## Mapper with Dto and Entity
 
- <img alt="Version" src="https://img.shields.io/badge/version-2.6.0-blue.svg?cacheSeconds=2592000" />
+ <img alt="Version" src="https://img.shields.io/badge/version-2.6.1-blue.svg?cacheSeconds=2592000" />
   <a href="https://php.net" target="_blank">
     <img src="https://img.shields.io/badge/php-%5E7.4.0-blue" />
   </a>
@@ -251,8 +251,14 @@ $dto->initialize();
 
 use Miniyus\Mapper\Data\Entity;
 
+/**
+ * Class DemoEntity
+ * 
+ * @author Yoo Seongmin <miniyu97@iokcom.com>
+ */
 class DemoEntity extends Entity{
-    // 기타 속성 선언 및 getter,setter (DTO와 동일함)
+    // 기타 내장 메서드들은 toDto()를 제외하고 크게 다르지 않음
+    // 구현하려는 설계 방식에 맞춰 작성
     
     /**
      * Model과 연결을 위해   
@@ -277,7 +283,10 @@ $entity->toModel();
 
 ```
 
-- Collections(Dtos,Entities)
+</details>
+
+<details>
+<summary>Collections(Dtos,Entities)</summary>
 
 ```php
 <?php
@@ -340,7 +349,7 @@ class DemoMap extends Map
 }
 ```
 
-    - generate:map 명령
+- generate:map 명령
 
 ```shell
 # map 클래스는 php artisan generate:map {name} {--json=} 명령을 통해 생성할 수 있다.
@@ -486,6 +495,15 @@ $mapper->mapList($sourceList, $targetClass, $callback);
 
 <details>
 <summary>last update: 2021.08.25</summary>
+
+> 2021.08.26
+>
+> v2.6.1
+> 리플렉션 관련 사항 수정
+> 이제 getter, setter가 구현되어 있지 않더라도 값을 제어할 수 있음
+> DataMapper::map() target class type object
+> 기타 타입 관련 주석 수정
+> Entity::toArray()의 allowNull 파라미터는 항상 true
 
 > 2021.08.25
 >

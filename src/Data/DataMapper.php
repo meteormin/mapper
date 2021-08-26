@@ -23,13 +23,13 @@ class DataMapper
 {
     /**
      * @param Arrayable|Mapable|Jsonable|array|object $data
-     * @param Mapable $object
+     * @param object $object
      * @param Closure|callable|null $callback
-     * @return Mapable
+     * @return object
      * @throws JsonMapper_Exception
      * @version 2.6.0 콜백의 return 유형이 array여도 mapping 가능하게 수정
      */
-    public static function map($data, Mapable $object, $callback = null): Mapable
+    public static function map($data, object $object, $callback = null): object
     {
         $jsonMapper = new JsonMapper();
 
@@ -72,12 +72,12 @@ class DataMapper
 
     /**
      * @param array|Collection $data
-     * @param Mapable $object
+     * @param object $object
      * @param Closure|null $callback
      * @return Collection
      * @throws JsonMapper_Exception
      */
-    public static function mapList($data, Mapable $object, Closure $callback = null): Collection
+    public static function mapList($data, object $object, Closure $callback = null): Collection
     {
         if (!is_array($data) && !($data instanceof Collection)) {
             throw new TypeError(get_class($object) . '은 매핑할 수 없습니다.');

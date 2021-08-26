@@ -18,7 +18,9 @@ abstract class Dto implements Mapable, JsonSerializable
     use ToEntity;
 
     /**
+     * @param array|object|null $params
      * @throws JsonMapper_Exception
+     * @throws DtoErrorException
      */
     public function __construct($params = null)
     {
@@ -48,12 +50,17 @@ abstract class Dto implements Mapable, JsonSerializable
     /**
      * @param Arrayable|Mapable|Jsonable|array|object $data
      * @param Closure|callable|null $callback
-     * @return $this|Mapable
-     * @throws JsonMapper_Exception
+     * @return $this
+     * @throws JsonMapper_Exception|DtoErrorException
      */
     public function map($data, $callback = null): Dto
     {
-        return DataMapper::map($data, $this, $callback);
+        $dto = DataMapper::map($data, $this, $callback);
+        if ($dto !== $this) {
+            throw new DtoErrorException('mapped result is Invalid in map()');
+        }
+
+        return $this;
     }
 
     /**

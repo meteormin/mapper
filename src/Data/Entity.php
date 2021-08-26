@@ -2,9 +2,9 @@
 
 namespace Miniyus\Mapper\Data;
 
+
 use Miniyus\Mapper\Data\Contracts\Mapable;
 use Miniyus\Mapper\Data\Traits\ToDto;
-use Miniyus\Mapper\Mapper;
 use Closure;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Database\Eloquent\Model;
@@ -20,11 +20,15 @@ use Miniyus\Mapper\Data\Traits\Transformation;
  */
 abstract class Entity implements Mapable, JsonSerializable
 {
-    use Transformation;
+    use Transformation {
+        toArray as protected TraitToArray;
+    }
+
     use ToDto;
 
     /**
-     * @throws JsonMapper_Exception
+     * @param array|object|null $params
+     * @throws JsonMapper_Exception|EntityErrorException
      */
     public function __construct($params = null)
     {
@@ -49,9 +53,9 @@ abstract class Entity implements Mapable, JsonSerializable
     abstract protected function getIdentifier(): string;
 
     /**
-     * @param array|Arrayable|null $params
+     * @param array|object|null $params
      * @return $this
-     * @throws JsonMapper_Exception
+     * @throws JsonMapper_Exception|EntityErrorException
      */
     public static function newInstance($params = null): Entity
     {
@@ -65,13 +69,12 @@ abstract class Entity implements Mapable, JsonSerializable
     public function toModel(): Model
     {
         $model = $this->model();
-        if ($model instanceof Arrayable) {
-            $model->fill($this->toArray(true));
-            return $model;
+        if ($model instanceof Model) {
+            return $model->fill($this->toArray());
         } elseif (is_null($model)) {
             throw new EntityErrorException('model is null');
         } else {
-            throw new EntityErrorException(get_class($model) . '모델을 매핑할 수 없습니다.');
+            throw new EntityErrorException(get_class($model) . 'is not model');
         }
     }
 
@@ -94,12 +97,18 @@ abstract class Entity implements Mapable, JsonSerializable
     /**
      * @param Arrayable|Mapable|Jsonable|array|object $data
      * @param Closure|callable|null $callback
-     * @return $this|Mapable
-     * @throws JsonMapper_Exception
+     * @return $this
+     * @throws JsonMapper_Exception|EntityErrorException
      */
     public function map($data, $callback = null): Entity
     {
-        return DataMapper::map($data, $this, $callback);
+        $entity = DataMapper::map($data, $this, $callback);
+
+        if ($entity !== $this) {
+            throw new EntityErrorException('mapped result is Invalid in map()');
+        }
+
+        return $this;
     }
 
     /**
@@ -111,5 +120,15 @@ abstract class Entity implements Mapable, JsonSerializable
     public function mapList($data, $callback = null): Entities
     {
         return Entities::newInstance(DataMapper::mapList($data, $this, $callback)->all());
+    }
+
+    /**
+     * Entity는 항상 null 허용해야 한다.
+     * @param bool $allowNull
+     * @return array|null
+     */
+    public function toArray(bool $allowNull = null): ?array
+    {
+        return $this->TraitToArray(true);
     }
 }
