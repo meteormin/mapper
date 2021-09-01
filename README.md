@@ -501,8 +501,8 @@ $mapper->mapList($sourceList, $targetClass, $callback);
 > v2.6.2
 > CustomCollection makeHidden() 메서드가 여전히 정상 작동하지 않는다.
 >> 버그 원인을 잘못 파악했었다. <br>
-> > 원인은 '...' 키워드를 이용한 함수의 가변 인자의 활용에서 문제가 발생했다.
-
+>> 원인은 '...' 키워드를 이용한 함수의 가변 인자의 활용에서 문제가 발생했다.
+>> https://github.com/miniyus/mapper/issues/1
 ```php
 <?php
 function first(...$args){
