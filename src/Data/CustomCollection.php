@@ -45,7 +45,7 @@ class CustomCollection extends Collection
      */
     public function makeHidden(...$hidden): self
     {
-        $this->traitMakeHidden($hidden);
+        $this->traitMakeHidden(is_array($hidden[0]) ? $hidden[0] : $hidden);
 
         $this->items = $this->map(function ($item) {
             if (method_exists($item, 'makeHidden')) {
@@ -73,7 +73,7 @@ class CustomCollection extends Collection
      */
     public function makeVisible(...$visible): self
     {
-        $this->traitMakeVisible($visible);
+        $this->traitMakeVisible(is_array($visible[0]) ? $visible[0] : $visible);
 
         $this->items = $this->map(function ($item) {
             if (method_exists($item, 'makeVisible')) {

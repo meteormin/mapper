@@ -23,7 +23,7 @@ class Dtos extends CustomCollection
     protected $items = [];
 
     /**
-     * @var array|Collection
+     * @var array
      */
     protected array $hidden = [];
 
@@ -32,7 +32,7 @@ class Dtos extends CustomCollection
      */
     public function __construct($dtos = [])
     {
-        if (is_array($dtos) || ($dtos instanceof ArrayAccess) || ($dtos instanceof ArrayAccess)) {
+        if (is_array($dtos) || ($dtos instanceof Arrayable) || ($dtos instanceof ArrayAccess)) {
             parent::__construct($dtos);
         }
     }

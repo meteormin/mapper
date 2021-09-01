@@ -1,11 +1,11 @@
 ## Mapper with Dto and Entity
 
- <img alt="Version" src="https://img.shields.io/badge/version-2.6.1-blue.svg?cacheSeconds=2592000" />
+ <img alt="Version" src="https://img.shields.io/badge/version-2.6.2-blue.svg?cacheSeconds=2592000" />
   <a href="https://php.net" target="_blank">
-    <img src="https://img.shields.io/badge/php-%5E7.4.0-blue" />
+    <img src="https://img.shields.io/badge/php-%5E7.4.0-blue" alt=""/>
   </a>
   <a href="https://laravel.com" target="_blank">
-    <img src="https://img.shields.io/badge/laravel-7.x-lightgrey" />
+    <img src="https://img.shields.io/badge/laravel-7.x-lightgrey" alt=""/>
   </a>
   <a href="https://github.com/miniyus/tongdocAPI#readme" target="_blank">
     <img alt="Documentation" src="https://img.shields.io/badge/documentation-yes-brightgreen.svg" />
@@ -494,25 +494,84 @@ $mapper->mapList($sourceList, $targetClass, $callback);
 ## Change Log
 
 <details>
-<summary>last update: 2021.08.26</summary>
+<summary>last update: 2021.09.01</summary>
+
+> 2021.09.01
+>
+> v2.6.2
+> CustomCollection makeHidden() 메서드가 여전히 정상 작동하지 않는다.
+>> 버그 원인을 잘못 파악했었다. <br>
+> > 원인은 '...' 키워드를 이용한 함수의 가변 인자의 활용에서 문제가 발생했다.
+
+```php
+<?php
+function first(...$args){
+    second($args);
+}
+
+function second(...$args){
+    return $args;
+}
+
+first([...]); // 배열을 인자로 넣으면 second는 2차원 배열을 반환하게 된다.
+
+// 설계 의도대로 적용하려면 배열 검사를 해줘야한다..
+function first(...$args){
+    second(is_array($args[0]) ? $args[0] : $args);
+}
+
+function second(...$args){
+    return $args;
+}
+
+```
+
+> 기타 docblock 수정
+>
+> Dtos의 생성자 오류 수정
+
+```php
+    /**
+     * @param array|Arrayable|ArrayAccess|null $dtos
+     */
+    public function __construct($dtos = [])
+    {
+        // ArrayAccess 인스턴스 비교가 중복되어 처리되고 있었다.
+        if (is_array($dtos) || ($dtos instanceof ArrayAccess) || ($dtos instanceof ArrayAccess)) {
+            parent::__construct($dtos);
+        }
+    }
+    
+    // 수정 후
+    /**
+     * @param array|Arrayable|ArrayAccess|null $dtos
+     */
+    public function __construct($dtos = [])
+    {
+        // Entities와 동일하게 Arrayable로 수정
+        if (is_array($dtos) || ($dtos instanceof Arrayable) || ($dtos instanceof ArrayAccess)) {
+            parent::__construct($dtos);
+        }
+    }
+```
 
 > 2021.08.26
 >
 > v2.6.1
-> 
+>
 > 리플렉션 관련 사항 수정(기존 코드에는 딱히 영향 없음)
 >> 이제 getter, setter가 구현되어 있지 않더라도 값을 제어할 수 있음
->> 여전히 toArray() 메서드는 getter를 기준으로 결과를 출력<br>
-> 
+> > 여전히 toArray() 메서드는 getter를 기준으로 결과를 출력<br>
+>
 > DataMapper::map() target class type object
-> 
+>
 > 기타 타입 관련 주석 수정
-> 
+>
 > Entity::toArray()의 allowNull 파라미터는 항상 true
-> 
+>
 > CustomCollection::makeHidden() 메서드 버그 수정
->> Colleciton::map() 메서드의 결과는 기존 index가 연관배열이 아닌 일반 배열일 경우 
->> index가 string으로 변환되기 때문에 일반배열로 map()메서드를 사용했으면, values()->all() 메서드까지 실행시켜줘야한다.
+>> Colleciton::map() 메서드의 결과는 기존 index가 연관배열이 아닌 일반 배열일 경우
+> > index가 string으로 변환되기 때문에 일반배열로 map()메서드를 사용했으면, values()->all() 메서드까지 실행시켜줘야한다.
 
 > 2021.08.25
 >

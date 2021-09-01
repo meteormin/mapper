@@ -6,7 +6,6 @@ namespace Miniyus\Mapper\Data;
 use Miniyus\Mapper\Data\Traits\ToDtos;
 use ArrayAccess;
 use Illuminate\Contracts\Support\Arrayable;
-use Miniyus\Mapper\Mapper;
 
 /**
  * Entities
@@ -23,6 +22,11 @@ class Entities extends CustomCollection
      * @var Entity[]
      */
     protected $items = [];
+
+    /**
+     * @var array
+     */
+    protected array $hidden = [];
 
     /**
      * @param array|Arrayable|ArrayAccess $entities
