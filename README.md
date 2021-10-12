@@ -1,6 +1,6 @@
 ## Mapper with Dto and Entity
 
- <img alt="Version" src="https://img.shields.io/badge/version-2.6.2-blue.svg?cacheSeconds=2592000" />
+ <img alt="Version" src="https://img.shields.io/badge/version-2.6.3-blue.svg?cacheSeconds=2592000" />
   <a href="https://php.net" target="_blank">
     <img src="https://img.shields.io/badge/php-%5E7.4.0-blue" alt=""/>
   </a>
@@ -494,15 +494,26 @@ $mapper->mapList($sourceList, $targetClass, $callback);
 ## Change Log
 
 <details>
-<summary>last update: 2021.09.01</summary>
+<summary>last update: 2021.10.13</summary>
+
+> 2021.10.13
+>
+> v2.6.3
+>
+> Dynamic __get(), __set() 매직 메서드 수정
+> __get(), __set() 매직 메서드내부에서 getter, setter 호출을 하는데 매직 메서드를 기준으로 작동하게 만들어져 있어 임의의 getter, setter를 작성하면, Dynamic 클래스 의도대로 작동하지 않는 문제 발생
+>
+> __get(), __set() 메서드의 경우도 __call 메서드 처럼 getAttribute(), setAttribute()를 호출하게 수정
 
 > 2021.09.01
 >
 > v2.6.2
+>
 > CustomCollection makeHidden() 메서드가 여전히 정상 작동하지 않는다.
 >> 버그 원인을 잘못 파악했었다. <br>
->> 원인은 '...' 키워드를 이용한 함수의 가변 인자의 활용에서 문제가 발생했다.
->> https://github.com/miniyus/mapper/issues/1
+> > 원인은 '...' 키워드를 이용한 함수의 가변 인자의 활용에서 문제가 발생했다.
+> > https://github.com/miniyus/mapper/issues/1
+
 ```php
 <?php
 function first(...$args){

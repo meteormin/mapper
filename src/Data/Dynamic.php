@@ -75,7 +75,7 @@ abstract class Dynamic implements Mapable
      */
     public function __get(string $key)
     {
-        return $this->{'get' . Str::camel($key)}();
+        return $this->getAttribute($key);
     }
 
     /**
@@ -88,7 +88,7 @@ abstract class Dynamic implements Mapable
      */
     public function __set(string $key, $value)
     {
-        $this->{'set' . Str::camel($key)}($value);
+        $this->setAttribute($key, $value);
         return $this;
     }
 
