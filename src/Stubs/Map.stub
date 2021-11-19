@@ -19,7 +19,7 @@ class {{name}} extends Map
      */
     protected function toEntity(Dto $dto, Entity $entity): {{entity}}
     {
-        if ($dto instanceof {{dto}} && $entity instanceof {{entity}}){
+        if ($dto instanceof {{dto}} && $entity instanceof {{entity}}) {
             // Write {{entity}} setter
             {{toEntity}}
         }
@@ -36,7 +36,7 @@ class {{name}} extends Map
      */
     protected function toDto(Entity $entity, Dto $dto): {{dto}}
     {
-        if ($entity instanceof {{entity}} && $dto instanceof {{dto}} ){
+        if ($entity instanceof {{entity}} && $dto instanceof {{dto}}) {
             // Write {{dto}} setter
             {{toDto}}
         }
