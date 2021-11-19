@@ -41,7 +41,7 @@ class Maker
      */
     public function setPath(string $path): Maker
     {
-        $this->path = base_path($path);
+        $this->path = $path;
 
         if (!is_dir($this->stubPath)) {
             mkdir($this->stubPath, 0755, true);
