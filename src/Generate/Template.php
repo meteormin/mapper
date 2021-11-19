@@ -8,20 +8,20 @@ use JsonMapper_Exception;
 abstract class Template
 {
     /**
-     * @param object|array $data
+     * @param object $data
      * @throws JsonMapper_Exception
      */
-    public function __construct($data)
+    public function __construct(object $data)
     {
         $this->map($data);
     }
 
     /**
-     * @param $data
+     * @param object $data
      * @return Template
      * @throws JsonMapper_Exception
      */
-    public function map($data): Template
+    public function map(object $data): Template
     {
         return (new JsonMapper)->map($data, $this);
     }

@@ -38,11 +38,11 @@ class GenerateMap extends Command
     /**
      * @param string $namespace
      * @param string $name
-     * @param array|object $data
+     * @param object $data
      * @return MapGenerator
      * @throws JsonMapper_Exception
      */
-    protected function makeGenerator(string $namespace, string $name, $data): MapGenerator
+    protected function makeGenerator(string $namespace, string $name, object $data): MapGenerator
     {
         return new MapGenerator(
             $namespace,
@@ -84,7 +84,7 @@ class GenerateMap extends Command
             $mapData['map'] = [];
         }
 
-        $generator = $this->makeGenerator($namespace, $name, $mapData);
+        $generator = $this->makeGenerator($namespace, $name, (object)$mapData);
 
         $this->info(json_encode($mapData, JSON_UNESCAPED_UNICODE || JSON_UNESCAPED_SLASHES || JSON_PRETTY_PRINT));
 
