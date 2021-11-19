@@ -156,7 +156,7 @@ class MapGenerator extends Generator
             $setter = $this->makeSetter($key);
             $getter = $this->makeGetter(!empty($value) ? $value : $key);
 
-            $code .= "\$entity->{$setter}(\$dto->{$getter}());\n\t\t";
+            $code .= "\$entity->{$setter}(\$dto->{$getter}());\n\t\t\t";
         }
 
         return $code;
@@ -176,7 +176,7 @@ class MapGenerator extends Generator
             $getter = $this->makeGetter($key);
             $setter = $this->makeSetter(!empty($value) ? $value : $key);
 
-            $code .= "\$dto->{$setter}(\$entity->{$getter}());\n\t\t";
+            $code .= "\$dto->{$setter}(\$entity->{$getter}());\n\t\t\t";
         }
 
         return $code;
