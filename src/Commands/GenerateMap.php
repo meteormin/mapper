@@ -3,8 +3,11 @@
 namespace Miniyus\Mapper\Commands;
 
 use JsonMapper_Exception;
+use Miniyus\Mapper\Generate\MakeClass;
 use Miniyus\Mapper\Generate\MapGenerator;
 use Illuminate\Console\Command;
+use Miniyus\Mapper\Generate\MapTemplate;
+use ReflectionException;
 
 class GenerateMap extends Command
 {
@@ -33,28 +36,57 @@ class GenerateMap extends Command
     }
 
     /**
+     * @param string $namespace
+     * @param string $name
+     * @param array|object $data
+     * @return MapGenerator
+     * @throws JsonMapper_Exception
+     */
+    protected function makeGenerator(string $namespace, string $name, $data): MapGenerator
+    {
+        return new MapGenerator(
+            $namespace,
+            $name,
+            new MakeClass(
+                base_path(config('make_class.stub_path', 'app/Stubs')),
+                base_path(config('make_class.save_path', 'app/Maps'))
+            ),
+            new MapTemplate($data)
+        );
+    }
+
+    /**
      * Execute the console command.
      *
      * @return int
      * @throws JsonMapper_Exception
+     * @throws ReflectionException
      */
     public function handle(): int
     {
         $this->option('json');
 
+        $namespace = config('mapper.map_namespace');
+
         if ($this->option('json')) {
-            $json = file_get_contents(config('make_class.json_path') . '/maps/' . $this->option('json'));
+            $name = Str::of($this->option('json'))->basename('.json');
+            $json = file_get_contents(config('make_class.json_path') . $this->option('json'));
             if (is_null($json)) {
                 $this->error('file not found...');
                 return 1;
             }
-            $generator = new MapGenerator($this->argument('name'), $json);
+
+            $mapData = json_decode($json);
         } else {
-            $generator = new MapGenerator($this->argument('name'));
-            $json = $generator->getJson();
+            $name = \Str::studly($this->argument('name'));
+            $mapClass = "$namespace\\$name";
+            $mapData = config("mapper.maps.$mapClass");
+            $mapData['map'] = [];
         }
 
-        $this->info(json_encode($json, JSON_UNESCAPED_UNICODE || JSON_UNESCAPED_SLASHES || JSON_PRETTY_PRINT));
+        $generator = $this->makeGenerator($namespace, $name, $mapData);
+
+        $this->info(json_encode($mapData, JSON_UNESCAPED_UNICODE || JSON_UNESCAPED_SLASHES || JSON_PRETTY_PRINT));
 
         if (!$this->confirm('Are you sure?')) {
             return 0;

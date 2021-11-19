@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Libraries\MapperV2\Maps;
+namespace \{{$namespace}};
 
-use \{{dto}};
-use \{{entity}};
+use \{{fullNameDto}};
+use \{{fullNameEntity}};
 
 class {{name}} extends Map
 {

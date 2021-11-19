@@ -66,8 +66,10 @@ class Mapper implements MapperInterface, Arrayable, Jsonable, JsonSerializable
     /**
      * @param Data\Contracts\Mapable $object
      * @param string|null $class
-     * @param Closure|callable $callback
+     * @param null $callback
      * @return Mapable
+     * @throws Exceptions\DtoErrorException
+     * @throws Exceptions\EntityErrorException
      * @throws JsonMapper_Exception
      */
     public function map(Mapable $object, string $class = null, $callback = null): Mapable
@@ -126,6 +128,8 @@ class Mapper implements MapperInterface, Arrayable, Jsonable, JsonSerializable
      * @param string|null $class
      * @param Closure|callable|null $callback
      * @return Collection
+     * @throws Exceptions\DtoErrorException
+     * @throws Exceptions\EntityErrorException
      * @throws JsonMapper_Exception
      */
     public function mapList($list, string $class = null, $callback = null): Collection
@@ -228,7 +232,7 @@ class Mapper implements MapperInterface, Arrayable, Jsonable, JsonSerializable
      * @param Dto|null $dto
      * @param Closure|callable|string|null $callback
      * @return  Dto
-     * @throws JsonMapper_Exception
+     * @throws JsonMapper_Exception|Exceptions\DtoErrorException
      * @version 2.5.8 callable 검사와 string 검사 순서 변경
      */
     protected function toDto(Entity $entity, ?Dto $dto, $callback = null): Dto
@@ -271,7 +275,7 @@ class Mapper implements MapperInterface, Arrayable, Jsonable, JsonSerializable
      * @param Entity|null $entity
      * @param Closure|callable|string|null $callback
      * @return Entity
-     * @throws JsonMapper_Exception
+     * @throws JsonMapper_Exception|Exceptions\EntityErrorException
      * @version 2.5.8 callable 검사와 string 검사 순서 변경
      */
     protected function toEntity(Dto $dto, ?Entity $entity, $callback = null): Entity

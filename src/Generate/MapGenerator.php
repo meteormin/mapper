@@ -2,12 +2,15 @@
 
 namespace Miniyus\Mapper\Generate;
 
-use Miniyus\Mapper\Generate\Properties;
-use JsonMapper_Exception;
 use ReflectionException;
 
 class MapGenerator extends Generator
 {
+    /**
+     * @var string
+     */
+    protected string $namespace;
+
     /**
      * class명
      * @var string
@@ -17,9 +20,9 @@ class MapGenerator extends Generator
     /**
      * json 원본
      *
-     * @var string|null
+     * @var array|object
      */
-    protected ?string $json;
+    protected $json;
 
     /**
      * \App\Libraries\Generate\MapTemplate
@@ -32,69 +35,38 @@ class MapGenerator extends Generator
      * make class
      * @var MakeClass
      */
-    protected MakeClass $maker;
+    protected Maker $maker;
 
     /**
-     * 입력받은 문자열이 json인지 파악하고
-     * json이면 json파일을 이용하여 map클래스 생성하고
-     * json이 아니면 입력받은 클래스이름으로 json을 생성
-     * 단, config.mapper.tables 리스트에 'snake case'로 정의된 동일이름의 테이블이 존재해야 한다.
-     * @param string $name 클래스이름
-     * @param string|null $json json파일
-     * @throws JsonMapper_Exception
+     * @param string $namespace
+     * @param string $name
+     * @param Maker $maker
+     * @param Template $template
      */
-    public function __construct(string $name, string $json = null)
+    public function __construct(string $namespace, string $name, Maker $maker, Template $template)
     {
-        if ($this->isJson($json)) {
-            parent::__construct($name, $json);
-        } else {
-            $fileName = config('make_class.json_path') . '/maps/' . $name . '.json';
-            $map = \Str::studly($name);
-            $contents = config("mapper.maps.App\\Libraries\\MapperV2\\Maps\\{$map}");
-            $contents['map'] = '';
-
-            if (file_put_contents($fileName, json_encode($contents)) !== false) {
-                parent::__construct($name, json_encode($contents));
-            }
-        }
-
-        $this->template = new MapTemplate();
-        $this->template->map(json_decode($this->json));
-        $this->maker->setPath('app/Libraries/MapperV2/Maps');
-    }
-
-    /**
-     * isJson
-     * 해당 문자열이 json문자열인지 아닌지 체크
-     *
-     * @param string|null $str
-     *
-     * @return boolean
-     */
-    protected function isJson(?string $str): bool
-    {
-        return is_string($str) &&
-            (is_object(json_decode($str)) ||
-                is_array(json_decode($str)));
+        parent::__construct($namespace, $name, $maker, $template);
     }
 
     /**
      * 실행
      *
      * @return bool
+     * @throws ReflectionException
      */
     public function generate(): bool
     {
-        return $this->maker->make('Map', \Str::studly($this->name), $this->map());
+        return $this->maker->make('Map', \Str::studly($this->name), $this->makeParameters()->toArray());
     }
 
     /**
      * mapping을 위해 속성들이 존재하는지 검사하고
      * Maker(MakeClass)에게 넘길 매개변수 배열 생성
      *
-     * @return array
+     * @return MapStub
+     * @throws ReflectionException
      */
-    protected function map(): array
+    protected function makeParameters(): MapStub
     {
         if (is_null($this->template->getMap())) {
             $properties = $this->autoMapping();
@@ -102,13 +74,25 @@ class MapGenerator extends Generator
             $properties = $this->mapping();
         }
 
-        return [
-            'name' => $this->name,
-            'entity' => $this->template->getEntity(),
-            'dto' => $this->template->getDto(),
-            'toEntity' => $this->toEntity($properties),
-            'toDto' => $this->toDto($properties)
-        ];
+        $namespace = $this->namespace;
+        $name = $this->name;
+        $fullNameEntity = $this->template->getEntity();
+        $fullNameDto = $this->template->getDto();
+        $entity = \Str::of($fullNameEntity)->afterLast();
+        $dto = \Str::of($fullNameDto)->afterLast();
+        $toDto = $this->toDto($properties);
+        $toEntity = $this->toEntity($properties);
+
+        return new MapStub(
+            $namespace,
+            $name,
+            $fullNameDto,
+            $fullNameEntity,
+            $dto,
+            $entity,
+            $toEntity,
+            $toDto
+        );
     }
 
 
@@ -200,7 +184,7 @@ class MapGenerator extends Generator
 
     /**
      * mapping
-     *
+     * property(은)는 Entity Class(이)가 기준이 된다.
      * @return array
      * @throws ReflectionException
      */

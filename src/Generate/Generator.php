@@ -2,17 +2,19 @@
 
 namespace Miniyus\Mapper\Generate;
 
+use JsonMapper_Exception;
+
 abstract class Generator
 {
-
-    protected string $name;
+    /**
+     * @var string
+     */
+    protected string $namespace;
 
     /**
-     * json
-     *
-     * @var string|null
+     * @var string
      */
-    protected ?string $json;
+    protected string $name;
 
     /**
      * template
@@ -22,17 +24,22 @@ abstract class Generator
     protected Template $template;
 
     /**
-     *
-     *
-     * @var MakeClass
+     * @var Maker
      */
-    protected MakeClass $maker;
+    protected Maker $maker;
 
-    public function __construct(string $name, string $json = null)
+    /**
+     * @param string $namespace
+     * @param string $name
+     * @param Maker $maker
+     * @param Template $template
+     */
+    public function __construct(string $namespace, string $name, Maker $maker, Template $template)
     {
+        $this->namespace = $namespace;
         $this->name = $name;
-        $this->json = $json;
-        $this->maker = new MakeClass();
+        $this->maker = $maker;
+        $this->template = $template;
     }
 
     /**
@@ -42,22 +49,27 @@ abstract class Generator
     abstract public function generate();
 
     /**
-     * get class name
-     * @return string|null
+     * @return string
      */
-    public function getName(): ?string
+    public function getNamespace(): string
+    {
+        return $this->namespace;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
-     * get origin json
-     *
-     * @return string|null
+     * @return Maker
      */
-    public function getJson(): ?string
+    public function getMaker(): Maker
     {
-        return $this->json;
+        return $this->maker;
     }
 
     /**

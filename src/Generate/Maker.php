@@ -2,6 +2,7 @@
 
 namespace Miniyus\Mapper\Generate;
 
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Arr;
 use TypeError;
 
@@ -25,13 +26,11 @@ class Maker
      */
     protected string $ext;
 
-    public function __construct(string $path = null, string $ext = 'php')
+    public function __construct(string $stubPath, string $path, string $ext = 'php')
     {
+        $this->stubPath = $stubPath;
+        $this->setPath($path);
         $this->ext = $ext;
-
-        if (!is_null($path)) {
-            $this->setPath($path);
-        }
     }
 
     /**
@@ -56,7 +55,7 @@ class Maker
      * 실행
      *
      * @param string $class 생성할 stub파일 이름
-     * @param string $name  생성할 클래스(파일)이름
+     * @param string $name 생성할 클래스(파일)이름
      * @param array $parameters stub파일의 대입될 매개변수들
      *
      * @return bool

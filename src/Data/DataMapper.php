@@ -4,6 +4,7 @@
 namespace Miniyus\Mapper\Data;
 
 
+use ArrayAccess;
 use Miniyus\Mapper\Data\Contracts\Mapable;
 use Closure;
 use Illuminate\Support\Collection;
@@ -52,6 +53,11 @@ class DataMapper
             }
         } else if ($data instanceof Arrayable) {
             $json = json_decode(json_encode($data->toArray()));
+            if (is_object($json)) {
+                $object = $jsonMapper->map($json, $object);
+            }
+        } else if ($data instanceof ArrayAccess) {
+            $json = json_decode(json_encode($data));
             if (is_object($json)) {
                 $object = $jsonMapper->map($json, $object);
             }

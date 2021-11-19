@@ -2,6 +2,7 @@
 
 namespace Miniyus\Mapper\Data;
 
+use ArrayAccess;
 use Miniyus\Mapper\Exceptions\DtoErrorException;
 use Miniyus\Mapper\Data\Contracts\Mapable;
 use Miniyus\Mapper\Data\Traits\ToEntity;
@@ -18,7 +19,7 @@ abstract class Dto implements Mapable, JsonSerializable
     use ToEntity;
 
     /**
-     * @param array|object|null $params
+     * @param array|Arrayable|Mapable|ArrayAccess|object|null $params
      * @throws JsonMapper_Exception
      * @throws DtoErrorException
      */

@@ -12,6 +12,7 @@ return [
          */
         'case_style' => 'snake_case',
     ],
+    'map_namespace' => '\App\Libraries\MapperV2\Maps',
     /**
      * Map mapping dto and entity
      */
