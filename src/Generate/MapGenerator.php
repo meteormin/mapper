@@ -78,8 +78,8 @@ class MapGenerator extends Generator
         $name = $this->name;
         $fullNameEntity = $this->template->getEntity();
         $fullNameDto = $this->template->getDto();
-        $entity = \Str::of($fullNameEntity)->afterLast();
-        $dto = \Str::of($fullNameDto)->afterLast();
+        $entity = \Str::of($fullNameEntity)->afterLast('\\');
+        $dto = \Str::of($fullNameDto)->afterLast('\\');
         $toDto = $this->toDto($properties);
         $toEntity = $this->toEntity($properties);
 
