@@ -81,7 +81,7 @@ class GenerateMap extends Command
             $name = \Str::studly($this->argument('name'));
             $mapClass = "$namespace\\$name";
             $mapData = config("mapper.maps.$mapClass");
-            $mapData['map'] = [];
+            $mapData['map'] = null;
         }
 
         $generator = $this->makeGenerator($namespace, $name, (object)$mapData);
