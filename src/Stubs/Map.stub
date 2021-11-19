@@ -3,6 +3,8 @@
 namespace {{namespace}};
 
 use Miniyus\Mapper\Maps\Map;
+use Miniyus\Mapper\Data\Dto;
+use Miniyus\Mapper\Data\Entity;
 use {{fullNameDto}};
 use {{fullNameEntity}};
 
@@ -10,31 +12,35 @@ class {{name}} extends Map
 {
     /**
      * 코드에서 클래스들의 getter, setter 유효성 체크를 위해
-     * dockblock에 type 명시 권장
      *
      * @param {{dto}} $dto
      * @param {{entity}} $entity
      * @return {{entity}}
      */
-    protected function toEntity({{dto}} $dto, {{entity}} $entity): {{entity}}
+    protected function toEntity(Dto $dto, Entity $entity): {{entity}}
     {
-        // Write {{entity}} setter
-        {{toEntity}}
+        if ($dto instanceof {{$dto}} && $entity instanceof {{$entity}}){
+            // Write {{entity}} setter
+            {{toEntity}}
+        }
+
         return $entity;
     }
 
     /**
      * 코드에서 클래스들의 getter, setter 유효성 체크를 위해
-     * dockblock에 type 명시 권장
      *
      * @param {{entity}} $entity
      * @param {{dto}} $dto
      * @return {{dto}}
      */
-    protected function toDto({{entity}} $entity, {{dto}} $dto): {{dto}}
+    protected function toDto(Entity $entity, Dto $dto): {{dto}}
     {
-        // Write {{dto}} setter
-        {{toDto}}
+        if ($entity instanceof {{$entity}} && $dto instanceof {{$dto}} ){
+            // Write {{dto}} setter
+            {{toDto}}
+        }
+
         return $dto;
     }
 }
