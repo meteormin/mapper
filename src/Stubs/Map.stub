@@ -1,9 +1,10 @@
 <?php
 
-namespace \{{namespace}};
+namespace {{namespace}};
 
-use \{{fullNameDto}};
-use \{{fullNameEntity}};
+use Miniyus\Mapper\Maps\Map;
+use {{fullNameDto}};
+use {{fullNameEntity}};
 
 class {{name}} extends Map
 {
