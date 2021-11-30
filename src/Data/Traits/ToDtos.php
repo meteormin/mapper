@@ -4,10 +4,12 @@
 namespace Miniyus\Mapper\Data\Traits;
 
 
+use JsonMapper_Exception;
 use Miniyus\Mapper\Data\Dto;
 use Miniyus\Mapper\Data\Dtos;
+use Miniyus\Mapper\Exceptions\DtoErrorException;
+use Miniyus\Mapper\Exceptions\EntityErrorException;
 use Miniyus\Mapper\Mapper;
-use ArrayAccess;
 use Closure;
 
 trait ToDtos
@@ -17,7 +19,9 @@ trait ToDtos
      * @param string|null $dto
      * @param Closure|callable|string|null $callback
      * @return Dtos|Dto[]
-     * @throws \JsonMapper_Exception
+     * @throws JsonMapper_Exception
+     * @throws DtoErrorException
+     * @throws EntityErrorException
      */
     public function toDtos(?string $dto = null, $callback = null): Dtos
     {

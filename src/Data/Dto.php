@@ -40,7 +40,7 @@ abstract class Dto implements Mapable, JsonSerializable
 
     /**
      * @param array|Arrayable|null $params
-     * @return $this
+     * @return static
      * @throws JsonMapper_Exception|DtoErrorException
      */
     public static function newInstance($params = null): Dto

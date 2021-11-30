@@ -54,7 +54,7 @@ abstract class Entity implements Mapable, JsonSerializable
 
     /**
      * @param array|object|null $params
-     * @return $this
+     * @return static
      * @throws JsonMapper_Exception|EntityErrorException
      */
     public static function newInstance($params = null): Entity
