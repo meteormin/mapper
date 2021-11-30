@@ -1,6 +1,17 @@
 ## Change Log
 
-**last update: 2021.11.19**
+**last update: 2021.11.30**
+
+### 2021.11.30: <br>
+
+> v2.6.5
+
+**feat**
+
+Transformaion Trait의 initialize() 메서드 관련
+
+- Property 클래스의 fillDefault() 메서드 수정
+    - NULL 허용 속성은 기본 값 할당 시 NULL 할당
 
 ### 2021.11.19: <br>
 

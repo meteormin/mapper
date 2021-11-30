@@ -211,9 +211,9 @@ class Property
             if ($type instanceof ReflectionNamedType) {
                 $value = $this->getDefaultValue($type->getName());
                 if (empty($defaults)) {
-                    if (!is_null($value)) {
-                        $this->set($property->getName(), $value);
-                    } else if ($type->allowsNull()) {
+                    if ($type->allowsNull()) {
+                        $this->set($property->getName(), null);
+                    } else if (!is_null($value)) {
                         $this->set($property->getName(), $value);
                     }
 
