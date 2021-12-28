@@ -25,7 +25,7 @@ class DataMapper
     /**
      * @param Arrayable|Mapable|Jsonable|array|object $data
      * @param object $object
-     * @param Closure|callable|null $callback
+     * @param callable|Closure|null $callback
      * @return object
      * @throws JsonMapper_Exception
      * @version 2.6.0 콜백의 return 유형이 array여도 mapping 가능하게 수정

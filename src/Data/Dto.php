@@ -19,7 +19,7 @@ abstract class Dto implements Mapable, JsonSerializable
     use ToEntity;
 
     /**
-     * @param array|Arrayable|Mapable|ArrayAccess|object|null $params
+     * @param Arrayable|Mapable|Jsonable|array|object|null $params
      * @throws JsonMapper_Exception
      * @throws DtoErrorException
      */
@@ -49,8 +49,8 @@ abstract class Dto implements Mapable, JsonSerializable
     }
 
     /**
-     * @param Arrayable|Mapable|Jsonable|array|object $data
-     * @param Closure|callable|null $callback
+     * @param Arrayable|Mapable|Jsonable|array|object|null $data
+     * @param callable|Closure|null $callback
      * @return $this
      * @throws JsonMapper_Exception|DtoErrorException
      */

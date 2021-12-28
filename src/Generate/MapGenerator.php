@@ -3,6 +3,7 @@
 namespace Miniyus\Mapper\Generate;
 
 use ReflectionException;
+use Illuminate\Support\Str;
 
 class MapGenerator extends Generator
 {
@@ -56,7 +57,7 @@ class MapGenerator extends Generator
      */
     public function generate(): bool
     {
-        return $this->maker->make('Map', \Str::studly($this->name), $this->makeParameters()->toArray());
+        return $this->maker->make('Map', Str::studly($this->name), $this->makeParameters()->toArray());
     }
 
     /**
@@ -78,8 +79,8 @@ class MapGenerator extends Generator
         $name = $this->name;
         $fullNameEntity = $this->template->getEntity();
         $fullNameDto = $this->template->getDto();
-        $entity = \Str::of($fullNameEntity)->afterLast('\\');
-        $dto = \Str::of($fullNameDto)->afterLast('\\');
+        $entity = Str::of($fullNameEntity)->afterLast('\\');
+        $dto = Str::of($fullNameDto)->afterLast('\\');
         $toDto = $this->toDto($properties);
         $toEntity = $this->toEntity($properties);
 

@@ -6,7 +6,6 @@ namespace Miniyus\Mapper\Data;
 use Miniyus\Mapper\Data\Traits\ToEntities;
 use ArrayAccess;
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Support\Collection;
 
 /**
  * Dtos

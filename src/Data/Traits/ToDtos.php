@@ -17,7 +17,7 @@ trait ToDtos
     /**
      * Dtos 객체로 변환
      * @param string|null $dto
-     * @param Closure|callable|string|null $callback
+     * @param callable|Closure|string|null $callback
      * @return Dtos|Dto[]
      * @throws JsonMapper_Exception
      * @throws DtoErrorException

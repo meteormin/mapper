@@ -2,10 +2,7 @@
 
 namespace Miniyus\Mapper;
 
-use Miniyus\Mapper\Data\Dto;
-use Miniyus\Mapper\Data\Entity;
 use Illuminate\Support\Arr;
-use Illuminate\Contracts\Support\Arrayable;
 
 /**
  * config/DataMapper.php의 데이터를 보다 쉽게 컨트롤하기 위한 클래스

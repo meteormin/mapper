@@ -17,7 +17,7 @@ trait ToEntities
      * Entities 객체로 변환
      *
      * @param string|null $entity
-     * @param Closure|callable|string|null $callback
+     * @param callable|Closure|string|null $callback
      * @return Entities|Entity[]
      * @throws JsonMapper_Exception
      * @throws DtoErrorException

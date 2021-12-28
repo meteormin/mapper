@@ -15,7 +15,7 @@ trait ReadOnlyDto
 {
     /**
      * @param string|null $entity
-     * @param Closure|string|null $callback
+     * @param callable|Closure|string|null $callback
      * @return Entity
      * @throws DtoErrorException
      */

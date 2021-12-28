@@ -1,6 +1,28 @@
 ## Change Log
 
-**last update: 2021.11.30**
+**last update: 2021.12.28**
+
+### 2021.12.28: <br>
+> v2.6.6
+
+**docs**
+
+일부 phpdoc 수정
+
+**feat**
+
+라라벨 Str 헬퍼 클래스 use 관련
+```php
+// 변경사항
+
+\Str::{method}
+
+use Illuminate\Support\Str
+Str::{method}
+
+```
+
+사용하지 않는 use 문 제거
 
 ### 2021.11.30: <br>
 

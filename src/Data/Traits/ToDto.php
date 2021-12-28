@@ -16,7 +16,7 @@ trait ToDto
 {
     /**
      * @param string|null $dto
-     * @param Closure|callable|string|null $callback
+     * @param callable|Closure|string|null $callback
      * @return Dto|Mapable|null
      * @throws JsonMapper_Exception
      * @throws DtoErrorException

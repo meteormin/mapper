@@ -2,7 +2,6 @@
 
 namespace Miniyus\Mapper\Generate;
 
-use JsonMapper_Exception;
 
 abstract class Generator
 {
