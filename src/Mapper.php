@@ -241,14 +241,6 @@ class Mapper implements MapperInterface, Arrayable, Jsonable, JsonSerializable
             return $dto;
         }
 
-        if (!is_null($this->map)) {
-            $dto = $this->map->entityToDto($entity, $dto);
-        } else if (!is_null($dto)) {
-            $dto->map($entity);
-        } else {
-            throw new InvalidArgumentException(get_class($entity) . ': Dto변환 실패 Dto객체가 null입니다.');
-        }
-
         if (!is_null($dto) && !is_null($callback)) {
             if (is_callable($callback)) {
                 $result = $callback($entity, $dto);
@@ -265,6 +257,12 @@ class Mapper implements MapperInterface, Arrayable, Jsonable, JsonSerializable
             } else {
                 throw new InvalidArgumentException(get_class($entity) . ': Dto변환 실패 $callback파라미터가 올바르지 않습니다.');
             }
+        } else if (!is_null($this->map)) {
+            $dto = $this->map->entityToDto($entity, $dto);
+        } else if (!is_null($dto)) {
+            $dto->map($entity);
+        } else {
+            throw new InvalidArgumentException(get_class($entity) . ': Dto변환 실패 Dto객체가 null입니다.');
         }
 
         return $dto;
@@ -286,14 +284,6 @@ class Mapper implements MapperInterface, Arrayable, Jsonable, JsonSerializable
             return $entity;
         }
 
-        if (!is_null($this->map)) {
-            $entity = $this->map->dtoToEntity($dto, $entity);
-        } else if (!is_null($entity)) {
-            $entity->map($dto);
-        } else {
-            throw new InvalidArgumentException(get_class($dto) . ': Entity변환 실패 Entity객체가 null입니다.');
-        }
-
         if (!is_null($entity) && !is_null($callback)) {
             if (is_callable($callback)) {
                 $result = $callback($dto, $entity);
@@ -310,6 +300,12 @@ class Mapper implements MapperInterface, Arrayable, Jsonable, JsonSerializable
             } else {
                 throw new InvalidArgumentException(get_class($dto) . ': Entity변환 실패 $callback파라미터가 올바르지 않습니다.');
             }
+        } else if (!is_null($this->map)) {
+            $entity = $this->map->dtoToEntity($dto, $entity);
+        } else if (!is_null($entity)) {
+            $entity->map($dto);
+        } else {
+            throw new InvalidArgumentException(get_class($dto) . ': Entity변환 실패 Entity객체가 null입니다.');
         }
 
         return $entity;

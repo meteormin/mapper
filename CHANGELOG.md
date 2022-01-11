@@ -8,7 +8,7 @@
 
 **feat**
 
-DataMapper::map(), Mapper::toEntity(), Mapper::toDto() 메서드 수정
+DataMapper::map() 메서드 수정
 
 - callback 처리 시, 먼저 JsonMapper를 이용하여 일치하는 속성들을 매핑한 후 callback을 처리한다.
 - callback 함수의 내용만 처리하는 것은 map() 메서드를 굳이 사용할 필요가 없으므로 불필요하다.
