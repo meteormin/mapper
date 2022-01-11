@@ -23,12 +23,14 @@ use TypeError;
 class DataMapper
 {
     /**
+     * 콜백이 있는 경우, 먼저 일치하는 속성들을 매칭 후 콜백함수를 실행합니다.
+     * callback 규칙: function({매핑 데이터}, {매핑 객체})
      * @param Arrayable|Mapable|Jsonable|array|object $data
      * @param object $object
      * @param callable|Closure|null $callback
      * @return object
      * @throws JsonMapper_Exception
-     * @version 2.6.0 콜백의 return 유형이 array여도 mapping 가능하게 수정
+     * @version 2.6.7
      */
     public static function map($data, object $object, $callback = null): object
     {
