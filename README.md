@@ -199,6 +199,7 @@ $dto->toEntity(DemoEntity::class);
 $dto->toEntity(DemoEntity::class, DemoMap::class);
 
 // Closure 활용 매핑
+// Closure 혹은 기타 callable을 활용할 경우 해당 로직으로 완전히 대제됩니다.
 $dto->toEntity(DemoEntity::class, function(DemoDto $dto, DemoEntity $entity){
     // getter, setter 매핑 로직
     return $entity;
