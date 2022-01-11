@@ -1,6 +1,6 @@
 ## Mapper with Dto and Entity
 
- <img alt="Version" src="https://img.shields.io/badge/version-2.6.6-blue.svg?cacheSeconds=2592000" />
+ <img alt="Version" src="https://img.shields.io/badge/version-2.6.7-blue.svg?cacheSeconds=2592000" />
   <a href="https://php.net" target="_blank">
     <img src="https://img.shields.io/badge/php-%5E7.4.0-blue" alt=""/>
   </a>
@@ -484,8 +484,7 @@ $mapper->mapList($sourceList, $targetClass, $callback);
 // 첫번째 파라미터: 변환 전 데이터
 // 두번째 파라미터: 데이터를 할당 받을 객체
 // 세번째 파라미터: 콜백 함수
-// 콜백 파라미터가 있으면 콜백 함수의 내용을 실행
-// 콜백 함수가 없으면, JsonMapper::map() 기능과 동일하다
+// 콜백 파라미터가 있으면 먼저 일치하는 항목들을 매핑하고 콜백 함수의 내용을 실행
 \Miniyus\Mapper\Data\DataMapper::map($data, $object, $callback);
 ```
 

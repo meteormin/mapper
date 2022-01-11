@@ -5,6 +5,8 @@ namespace Miniyus\Mapper\Maps;
 use Miniyus\Mapper\Data\Dto;
 use Miniyus\Mapper\Data\Entity;
 use JsonMapper_Exception;
+use Miniyus\Mapper\Exceptions\DtoErrorException;
+use Miniyus\Mapper\Exceptions\EntityErrorException;
 
 abstract class Map implements MapInterface
 {
@@ -61,6 +63,7 @@ abstract class Map implements MapInterface
      * @param Entity $entity
      * @return Entity
      * @throws JsonMapper_Exception
+     * @throws EntityErrorException
      */
     public function dtoToEntity(Dto $dto, Entity $entity): Entity
     {
@@ -85,6 +88,7 @@ abstract class Map implements MapInterface
      * @param Dto $dto
      * @return Dto
      * @throws JsonMapper_Exception
+     * @throws DtoErrorException
      */
     public function entityToDto(Entity $entity, Dto $dto): Dto
     {

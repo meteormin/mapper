@@ -34,18 +34,6 @@ class DataMapper
     {
         $jsonMapper = new JsonMapper();
 
-        if (!is_null($callback)) {
-            $result = $callback($data, $object);
-            if (is_array($result)) {
-                $json = json_decode(json_encode($data));
-                if (is_object($json)) {
-                    $result = $jsonMapper->map($json, $object);
-                }
-            }
-
-            return $result;
-        }
-
         if ($data instanceof Mapable) {
             $json = json_decode(json_encode($data->toArray(true)));
             if (is_object($json)) {
@@ -70,6 +58,16 @@ class DataMapper
             $json = json_decode(json_encode($data));
             if (is_object($json)) {
                 $object = $jsonMapper->map($json, $object);
+            }
+        }
+
+        if (!is_null($callback)) {
+            $object = $callback($data, $object);
+            if (is_array($object)) {
+                $json = json_decode(json_encode($data));
+                if (is_object($json)) {
+                    $object = $jsonMapper->map($json, $object);
+                }
             }
         }
 
