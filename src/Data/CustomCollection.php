@@ -10,6 +10,10 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Support\Collection;
 use Miniyus\Mapper\Data\Traits\Transformation;
 
+/**
+ * @template TKey of array-key
+ * @template TValue
+ */
 class CustomCollection extends Collection
 {
     use Transformation {
@@ -18,18 +22,18 @@ class CustomCollection extends Collection
     }
 
     /**
-     * @var array
+     * @var array<TKey, TValue>
      */
     protected $items = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected array $hidden = [];
 
     /**
      * CustomCollection constructor.
-     * @param array|Arrayable|ArrayAccess $items
+     * @inheritdoc
      */
     public function __construct($items = [])
     {
@@ -39,7 +43,7 @@ class CustomCollection extends Collection
     /**
      * makeHidden
      * toArray, toJson, __toString 메서드를 통한 출력결과에서 숨길 속성을 정의할 수 있다
-     * @param array|string $hidden
+     * @param string[]|string $hidden
      *
      * @return $this
      */
@@ -67,7 +71,7 @@ class CustomCollection extends Collection
     /**
      * makeVisible
      * makeHidden 메서드에서 숨긴 속성을 다시 출력 가능하게
-     * @param array|string $visible
+     * @param string[]|string $visible
      *
      * @return $this
      */
@@ -88,7 +92,7 @@ class CustomCollection extends Collection
 
     /**
      * @param bool $allowNull
-     * @return array
+     * @return array<TKey, TValue>
      */
     public function toArray(bool $allowNull = null): array
     {

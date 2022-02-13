@@ -11,6 +11,8 @@ use Illuminate\Contracts\Support\Arrayable;
  * Entities
  * 라라벨 컬렉션을 확장(상속)
  * Entity 객체리스트를 라라벨 컬렉션의 내장 기능을 활용하여 보다 쉽게 컨트롤
+ * @template TKey of array-key
+ * @template TValue
  */
 class Entities extends CustomCollection
 {
@@ -19,17 +21,17 @@ class Entities extends CustomCollection
     /**
      * Undocumented variable
      *
-     * @var Entity[]
+     * @var array<TKey, TValue>
      */
     protected $items = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected array $hidden = [];
 
     /**
-     * @param array|Arrayable|ArrayAccess $entities
+     * @param array<TKey,TValue>|Arrayable<TKey,TValue>|ArrayAccess<TKey,TValue>|null  $entities
      */
     public function __construct($entities = [])
     {
@@ -39,7 +41,7 @@ class Entities extends CustomCollection
     }
 
     /**
-     * @param array|Arrayable|ArrayAccess $params
+     * @param array<TKey,TValue>|Arrayable<TKey,TValue>|ArrayAccess<TKey,TValue>|null $params
      * @return static
      */
     public static function newInstance($params = []): Entities

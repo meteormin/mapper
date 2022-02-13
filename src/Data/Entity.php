@@ -27,7 +27,7 @@ abstract class Entity implements Mapable, JsonSerializable
     use ToDto;
 
     /**
-     * @param Arrayable|Mapable|Jsonable|array|object|null $params
+     * @param Arrayable|Mapable|Jsonable|array|null $params
      * @throws JsonMapper_Exception|EntityErrorException
      */
     public function __construct($params = null)
@@ -53,7 +53,7 @@ abstract class Entity implements Mapable, JsonSerializable
     abstract protected function getIdentifier(): string;
 
     /**
-     * @param array|object|null $params
+     * @param Arrayable|Mapable|Jsonable|array|null $params
      * @return static
      * @throws JsonMapper_Exception|EntityErrorException
      */
@@ -87,7 +87,7 @@ abstract class Entity implements Mapable, JsonSerializable
     {
         $model = $this->getIdentifier();
 
-        if (is_null($model)) {
+        if (empty($model)) {
             return null;
         }
 
@@ -95,7 +95,7 @@ abstract class Entity implements Mapable, JsonSerializable
     }
 
     /**
-     * @param Arrayable|Mapable|Jsonable|array|object|null $data
+     * @param Arrayable|Mapable|Jsonable|array|null $data
      * @param callable|Closure|null $callback
      * @return $this
      * @throws JsonMapper_Exception|EntityErrorException
@@ -113,8 +113,8 @@ abstract class Entity implements Mapable, JsonSerializable
 
     /**
      * @param $data
-     * @param Closure|callable|null $callback
-     * @return Entities<$this>|$this[]
+     * @param null $callback
+     * @return Entities<int,$this>
      * @throws JsonMapper_Exception
      */
     public function mapList($data, $callback = null): Entities

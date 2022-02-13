@@ -2,6 +2,10 @@
 
 namespace Miniyus\Mapper\Data\Traits;
 
+use Miniyus\Mapper\Data\Contracts\Mapable;
+use Miniyus\Mapper\Data\CustomCollection;
+use Miniyus\Mapper\Data\Dto;
+use Miniyus\Mapper\Data\Entity;
 use Miniyus\Mapper\Utils\ArrController;
 use Miniyus\Mapper\Utils\Property;
 use Illuminate\Contracts\Support\Arrayable;
@@ -10,11 +14,12 @@ use Illuminate\Contracts\Support\Arrayable;
  * Trait Transformation
  * 기능 위주 구현
  * @package App\Libraries\Data\Traits
+ * @mixin Mapable
  */
 trait Transformation
 {
     /**
-     * @var array
+     * @var string[]
      */
     protected array $hidden = [];
 
@@ -30,7 +35,7 @@ trait Transformation
 
     /**
      * @param array $hidden
-     * @return $this
+     * @return Transformation|CustomCollection|Dto|Entity
      */
     public function setHidden(array $hidden): self
     {
@@ -40,7 +45,7 @@ trait Transformation
     /**
      * Get 출력하지 않을 속성들의 배열
      *
-     * @return  array
+     * @return string[]
      */
     public function getHidden(): array
     {
@@ -107,8 +112,8 @@ trait Transformation
     /**
      * makeHidden
      * toArray() 메서드 작동 시, 숨기고 싶은 속성을 정할 수 있다
-     * @param string|array|null $hidden
-     * @return $this
+     * @param mixed ...$hidden
+     * @return Transformation|CustomCollection|Dto|Entity
      * @version 2.5.8 작동 방식 변경
      */
     public function makeHidden(...$hidden): self
@@ -121,8 +126,8 @@ trait Transformation
 
     /**
      * toArray() 메서드 작동 시, 숨겼던 속성 항목을 다시 출력 시킬 수 있다.
-     * @param string|array|null $visible
-     * @return $this
+     * @param mixed ...$visible
+     * @return Transformation|CustomCollection|Dto|Entity
      * @version 2.5.8 작동 방식 변경
      */
     public function makeVisible(...$visible): self
@@ -141,7 +146,7 @@ trait Transformation
      * array: []
      * 기타: null (이 경우 nullable체크를 하여 nullable인 경우만 초기화를 해준다.)
      * @param array $defaults
-     * @return $this
+     * @return Transformation|CustomCollection|Dto|Entity
      */
     public function initialize(array $defaults = []): self
     {

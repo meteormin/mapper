@@ -12,14 +12,17 @@ use Miniyus\Mapper\Exceptions\EntityErrorException;
 use Miniyus\Mapper\Mapper;
 use Closure;
 
+/**
+ * @template T
+ */
 trait ToEntity
 {
     /**
      * 콜백이 있는 경우, 매핑 처리 로직이 콜백함수 내부의 로직으로 대체됩니다.
      * callback 규칙: function({매핑 데이터}, {매핑 객체})
-     * @param string|null $entity
+     * @param string|T|null $entity
      * @param callable|Closure|string|null $callback
-     * @return Entity|Mapable|null
+     * @return T|null
      * @throws JsonMapper_Exception
      * @throws DtoErrorException
      * @throws EntityErrorException

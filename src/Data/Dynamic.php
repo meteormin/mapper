@@ -12,7 +12,7 @@ abstract class Dynamic implements Mapable
     /**
      * set 가능한 필드명 정의
      *
-     * @var array
+     * @var string[]
      */
     protected array $fillable = [];
 
@@ -166,7 +166,7 @@ abstract class Dynamic implements Mapable
 
     /**
      * @param int $options
-     * @return false|string
+     * @return string
      */
     public function toJson($options = JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES): string
     {

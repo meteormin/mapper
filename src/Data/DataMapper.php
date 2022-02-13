@@ -19,20 +19,22 @@ use TypeError;
  * JsonMapper Wrapper
  * use JsonMapper
  * @package App\Libraries\Data
+ *
+ * @template T
  */
 class DataMapper
 {
     /**
      * 콜백이 있는 경우, 먼저 일치하는 속성들을 매칭 후 콜백함수를 실행합니다.
      * callback 규칙: function({매핑 데이터}, {매핑 객체})
-     * @param Arrayable|Mapable|Jsonable|array|object $data
-     * @param object $object
+     * @param array|Arrayable|Jsonable|Mapable $data
+     * @param T $object
      * @param callable|Closure|null $callback
-     * @return object
+     * @return T
      * @throws JsonMapper_Exception
      * @version 2.6.7
      */
-    public static function map($data, object $object, $callback = null): object
+    public static function map($data, $object, $callback = null)
     {
         $jsonMapper = new JsonMapper();
 
@@ -56,11 +58,11 @@ class DataMapper
             if (is_object($json)) {
                 $object = $jsonMapper->map($json, $object);
             }
-        } else if (is_object($data) || is_array($data)) {
+        } else if (is_array($data)) {
             $json = json_decode(json_encode($data));
-            if (is_object($json)) {
-                $object = $jsonMapper->map($json, $object);
-            }
+            $object = $jsonMapper->map($json, $object);
+        } else {
+            $object = $jsonMapper->map($data, $object);
         }
 
         if (!is_null($callback)) {
@@ -77,13 +79,13 @@ class DataMapper
     }
 
     /**
-     * @param array|Collection $data
-     * @param object $object
-     * @param Closure|null $callback
-     * @return Collection
+     * @param Collection<mixed,mixed>|array $data
+     * @param T $object
+     * @param Closure|callable|null $callback
+     * @return Collection<mixed,T>
      * @throws JsonMapper_Exception
      */
-    public static function mapList($data, object $object, Closure $callback = null): Collection
+    public static function mapList($data, $object, $callback = null): Collection
     {
         if (!is_array($data) && !($data instanceof Collection)) {
             throw new TypeError(get_class($object) . '은 매핑할 수 없습니다.');
@@ -95,6 +97,6 @@ class DataMapper
             $rsList->add(self::map($value, new $class, $callback));
         }
 
-        return collect($rsList);
+        return $rsList;
     }
 }

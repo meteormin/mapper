@@ -11,23 +11,25 @@ use Illuminate\Contracts\Support\Arrayable;
  * Dtos
  * 라라벨 컬렉션을 확장(상속)
  * Dto객체리스트를 라라벨 컬렉션의 내장 기능을 활용하여 보다 쉽게 컨트롤
+ * @template TKey of array-key
+ * @template TValue
  */
 class Dtos extends CustomCollection
 {
     use ToEntities;
 
     /**
-     * @var Dto[]
+     * @inheritdoc
      */
     protected $items = [];
 
     /**
-     * @var array
+     * @var string[]
      */
     protected array $hidden = [];
 
     /**
-     * @param array|Arrayable|ArrayAccess|null $dtos
+     * @param array<TKey,TValue>|Arrayable<TKey,TValue>|ArrayAccess<TKey,TValue>|null $dtos
      */
     public function __construct($dtos = [])
     {
@@ -37,7 +39,7 @@ class Dtos extends CustomCollection
     }
 
     /**
-     * @param array|Arrayable|ArrayAccess $params
+     * @param array<TKey,TValue>|Arrayable<TKey,TValue>|ArrayAccess<TKey,TValue>|null  $params
      * @return static
      */
     public static function newInstance($params = []): Dtos
