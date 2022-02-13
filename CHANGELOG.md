@@ -1,6 +1,15 @@
 ## Change Log
 
-**last update: 2022.01.11**
+**last update: 2022.02.13**
+
+### 2022.02.13: <br>
+
+> v2.7.0
+
+**feat**
+
+support php 8.1 & laravel 9.0
+- 테스트 필요...
 
 ### 2022.01.11: <br>
 
