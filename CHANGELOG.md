@@ -2,6 +2,14 @@
 
 **last update: 2022.01.11**
 
+### 2022.02.17: <br>
+
+> v2.6.8
+
+**fix**
+
+update dependency Laravel ^7.30
+
 ### 2022.01.11: <br>
 
 > v2.6.7
