@@ -9,9 +9,9 @@
   ],
   "require": {
     "php": "^7.4",
-    "illuminate/console": "^v7.30.4|^8.0",
-    "illuminate/support": "^v7.30.4|^8.0",
-    "illuminate/database": "^v7.30.4|^8.0",
+    "illuminate/console": "^v7.30|^8.0",
+    "illuminate/support": "^v7.30|^8.0",
+    "illuminate/database": "^v7.30|^8.0",
     "netresearch/jsonmapper": "^v3.1.0|^4.0.0",
     "ext-json": "*"
   },
