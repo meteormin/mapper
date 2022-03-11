@@ -1,19 +1,12 @@
 <?php
 
-namespace Miniyus\Mapper\Utils;
+namespace App\Libraries\Utils;
 
-
-use Illuminate\Support\Str;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionObject;
 use ReflectionProperty;
-
-/**
- * public이 아닌 속성정보와 데이터에 접근하기 위한 클래스
- * 단, getter와 setter가 구현되어 있어야 함
- * ReflectionClass 기능을 사용하여 조금 더 쉽게 사용
- */
+use Throwable;
 
 /**
  * public이 아닌 속성정보와 데이터에 접근하기 위한 클래스
@@ -86,12 +79,7 @@ class Property
      */
     public function get(string $key)
     {
-        $getter = 'get' . ucfirst($key);
-        if (method_exists($this->origin, $getter)) {
-            return $this->origin->$getter();
-        }
-
-        return $this->getProperty($key);
+        return $this->origin->{'get' . ucfirst($key)}();
     }
 
     /**
@@ -102,13 +90,9 @@ class Property
      */
     public function set(string $key, $value): Property
     {
-        $setter = 'set' . ucfirst($key);
-        if (method_exists($this->origin, $setter)) {
-            $this->origin->$setter($value);
-            return $this;
-        }
+        $this->origin->{'set' . ucfirst($key)}($value);
 
-        return $this->setProperty($key, $value);
+        return $this;
     }
 
     /**
@@ -167,9 +151,9 @@ class Property
     {
         $arr = [];
         foreach ($this->properties as $prop) {
-            if (method_exists($this->origin, 'get' . Str::studly($prop->getName()))) {
+            if (method_exists($this->origin, 'get' . \Str::studly($prop->getName()))) {
                 if ($prop->isInitialized($this->origin)) {
-                    $arr[$prop->getName()] = $this->origin->{'get' . Str::studly($prop->getName())}();
+                    $arr[$prop->getName()] = $this->origin->{'get' . \Str::studly($prop->getName())}();
                 }
             }
         }
@@ -211,6 +195,7 @@ class Property
             if ($type instanceof ReflectionNamedType) {
                 $value = $this->getDefaultValue($type->getName());
                 if (empty($defaults)) {
+
                     if ($type->allowsNull()) {
                         $this->set($property->getName(), null);
                     } else if (!is_null($value)) {
@@ -223,11 +208,13 @@ class Property
                     if (gettype($default) == gettype($value)) {
                         $this->set($property->getName(), $default);
                     } else {
-                        if (!is_null($value)) {
-                            $this->set($property->getName(), $value);
-                        } else if ($type->allowsNull()) {
+
+                        if ($type->allowsNull()) {
+                            $this->set($property->getName(), null);
+                        } else if (!is_null($value)) {
                             $this->set($property->getName(), $value);
                         }
+
                     }
                 }
             }

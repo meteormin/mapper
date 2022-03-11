@@ -1,6 +1,17 @@
 ## Change Log
 
-**last update: 2022.01.11**
+**last update: 2022.03.11**
+
+### 2022.03.11: <br>
+
+> v2.6.9
+
+**fix**
+
+Miniyus\Utils\Property
+
+- 리플렉션 클래스를 이용하여, 기본 값 초기화하는 메서드 수정
+    - nullable의 속성의 경우 null로 초기화하게 수정
 
 ### 2022.02.17: <br>
 
