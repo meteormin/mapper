@@ -71,10 +71,15 @@ abstract class Map implements MapInterface
         $entityClass = $this->entityClass;
 
         if ($dto instanceof $dtoClass && $entity instanceof $entityClass) {
+
             $result = $this->toEntity($dto, $entity);
-            if(is_array($result)){
+
+            if (is_array($result)) {
+
                 $entity->map($result);
-            } elseif($result instanceof Entity){
+
+            } else if ($result instanceof Entity) {
+
                 $entity = $result;
             }
         }
@@ -96,10 +101,15 @@ abstract class Map implements MapInterface
         $entityClass = $this->entityClass;
 
         if ($dto instanceof $dtoClass && $entity instanceof $entityClass) {
+
             $result = $this->toDto($entity, $dto);
-            if(is_array($result)) {
+
+            if (is_array($result)) {
+
                 $dto->map($result);
-            }else if($result instanceof Dto){
+
+            } else if ($result instanceof Dto) {
+
                 $dto = $result;
             }
         }

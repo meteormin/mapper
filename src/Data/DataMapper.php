@@ -25,7 +25,7 @@ class DataMapper
     /**
      * 콜백이 있는 경우, 먼저 일치하는 속성들을 매칭 후 콜백함수를 실행합니다.
      * callback 규칙: function({매핑 데이터}, {매핑 객체})
-     * @param Arrayable|Mapable|Jsonable|array|object $data
+     * @param Arrayable|Mapable|Jsonable|array|ArrayAccess|object $data
      * @param object $object
      * @param callable|Closure|null $callback
      * @return object
@@ -35,40 +35,35 @@ class DataMapper
     public static function map($data, object $object, $callback = null): object
     {
         $jsonMapper = new JsonMapper();
+        $jsonObject = null;
 
         if ($data instanceof Mapable) {
-            $json = json_decode(json_encode($data->toArray(true)));
-            if (is_object($json)) {
-                $object = $jsonMapper->map($json, $object);
-            }
+            $jsonObject = json_decode(json_encode($data->toArray(true)));
+
         } else if ($data instanceof Arrayable) {
-            $json = json_decode(json_encode($data->toArray()));
-            if (is_object($json)) {
-                $object = $jsonMapper->map($json, $object);
-            }
+            $jsonObject = json_decode(json_encode($data->toArray()));
+
         } else if ($data instanceof ArrayAccess) {
-            $json = json_decode(json_encode($data));
-            if (is_object($json)) {
-                $object = $jsonMapper->map($json, $object);
-            }
+            $jsonObject = json_decode(json_encode($data));
+
         } else if ($data instanceof Jsonable) {
-            $json = json_decode($data->toJson());
-            if (is_object($json)) {
-                $object = $jsonMapper->map($json, $object);
-            }
+            $jsonObject = json_decode($data->toJson());
+
         } else if (is_object($data) || is_array($data)) {
-            $json = json_decode(json_encode($data));
-            if (is_object($json)) {
-                $object = $jsonMapper->map($json, $object);
-            }
+            $jsonObject = json_decode(json_encode($data));
+
+        }
+
+        if (is_object($jsonObject)) {
+            $object = $jsonMapper->map($jsonObject, $object);
         }
 
         if (!is_null($callback)) {
             $object = $callback($data, $object);
             if (is_array($object)) {
-                $json = json_decode(json_encode($data));
-                if (is_object($json)) {
-                    $object = $jsonMapper->map($json, $object);
+                $jsonObject = json_decode(json_encode($data));
+                if (is_object($jsonObject)) {
+                    $object = $jsonMapper->map($jsonObject, $object);
                 }
             }
         }

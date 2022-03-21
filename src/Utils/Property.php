@@ -197,6 +197,24 @@ class Property
      */
     public function fillDefault(array $defaults = [])
     {
+        $forceSetValue = function (string $propertyName, $value, bool $allowNull) {
+
+            if (is_null($value)) {
+                return;
+            }
+
+            if ($allowNull) {
+                $value = null;
+            }
+
+            try {
+                $this->setter($propertyName, $value);
+            } catch (\BadMethodCallException $e) {
+                $this->setProperty($propertyName, $value);
+            }
+
+        };
+
         foreach ($this->getProperties() as $property) {
             if (!$property->hasType()) {
                 continue;
@@ -207,49 +225,22 @@ class Property
             }
 
             $type = $property->getType();
-            if ($type instanceof ReflectionNamedType) {
-                $value = $this->getDefaultValue($type->getName());
-                if (empty($defaults)) {
 
-                    if ($type->allowsNull()) {
-                        try {
-                            $this->setter($property->getName(), null);
-                        } catch (\BadMethodCallException $e) {
-                            $this->setProperty($property->getName(), null);
-                        }
-                    } else if (!is_null($value)) {
-                        try {
-                            $this->setter($property->getName(), $value);
-                        } catch (\BadMethodCallException $e) {
-                            $this->setProperty($property->getName(), $value);
-                        }
-                    }
+            if (!$type instanceof ReflectionNamedType) {
+                continue;
+            }
 
+            $value = $this->getDefaultValue($type->getName());
+
+            $default = $defaults[$property->getName()] ?? null;
+
+            if (is_null($default)) {
+                $forceSetValue($property, $value, $type->allowsNull());
+            } else {
+                if (gettype($default) == gettype($value)) {
+                    $forceSetValue($property, $default, $type->allowsNull());
                 } else {
-                    $default = $defaults[$property->getName()];
-
-                    if (gettype($default) == gettype($value)) {
-                        try {
-                            $this->setter($property->getName(), $default);
-                        } catch (\BadMethodCallException $e) {
-                            $this->setProperty($property->getName(), $default);
-                        }
-                    } else {
-
-                        if ($type->allowsNull()) {
-                            $setValue = null;
-                        } else if (!is_null($value)) {
-                            $setValue = $value;
-                        }
-
-                        if (isset($setValue)) {
-                            try {
-                                $this->setter($property->getName(), $setValue);
-                            } catch (\BadMethodCallException $e) {
-                                $this->setProperty($property->getName(), $setValue);
-                            }
-                        }
-                    }
+                    $forceSetValue($property, $value, $type->allowsNull());
                 }
             }
         }
