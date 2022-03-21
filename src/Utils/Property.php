@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Libraries\Utils;
+namespace Miniyus\Mapper\Utils;
 
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionObject;
 use ReflectionProperty;
-use Throwable;
+use Illuminate\Support\Str;
 
 /**
  * public이 아닌 속성정보와 데이터에 접근하기 위한 클래스
@@ -48,7 +48,6 @@ class Property
 
 
     /**
-     * Undocumented function
      * @param ReflectionProperty[] $properties
      * @return $this
      */
@@ -71,15 +70,13 @@ class Property
     }
 
     /**
-     * get value of key
-     *
      * @param string $key
      *
      * @return mixed|null
      */
-    public function get(string $key)
+    public function getter(string $key)
     {
-        return $this->origin->{'get' . ucfirst($key)}();
+        return $this->origin->{'get' . Str::studly($key)}();
     }
 
     /**
@@ -88,9 +85,9 @@ class Property
      *
      * @return $this
      */
-    public function set(string $key, $value): Property
+    public function setter(string $key, $value): Property
     {
-        $this->origin->{'set' . ucfirst($key)}($value);
+        $this->origin->{'set' . Str::studly($key)}($value);
 
         return $this;
     }
@@ -144,16 +141,20 @@ class Property
 
     /**
      * to array
-     *
      * @return array|null
      */
     public function toArray(): ?array
     {
         $arr = [];
+
         foreach ($this->properties as $prop) {
-            if (method_exists($this->origin, 'get' . \Str::studly($prop->getName()))) {
+            if (method_exists($this->origin, 'get' . Str::studly($prop->getName()))) {
                 if ($prop->isInitialized($this->origin)) {
-                    $arr[$prop->getName()] = $this->origin->{'get' . \Str::studly($prop->getName())}();
+                    $arr[$prop->getName()] = $this->getter($prop->getName());
+                }
+            } else {
+                if ($prop->isInitialized($this->origin)) {
+                    $arr[$prop->getName()] = $this->getProperty($prop->getName());
                 }
             }
         }
@@ -162,11 +163,9 @@ class Property
     }
 
     /**
-     * Undocumented function
-     *
      * @return array
      */
-    public function toArrayKeys(): array
+    public function keys(): array
     {
         $keys = [];
         foreach ($this->properties as $prop) {
@@ -177,6 +176,22 @@ class Property
     }
 
     /**
+     * @return array
+     */
+    public function values(): array
+    {
+        $values = [];
+
+        foreach ($this->properties as $prop) {
+            $values[] = $prop->getValue();
+        }
+
+        return $values;
+    }
+
+    /**
+     * 기본 값 채우기
+     * nullable 유형의 경우는 null
      * @param array $defaults
      * @return void
      */
@@ -197,24 +212,43 @@ class Property
                 if (empty($defaults)) {
 
                     if ($type->allowsNull()) {
-                        $this->set($property->getName(), null);
+                        try {
+                            $this->setter($property->getName(), null);
+                        } catch (\BadMethodCallException $e) {
+                            $this->setProperty($property->getName(), null);
+                        }
                     } else if (!is_null($value)) {
-                        $this->set($property->getName(), $value);
+                        try {
+                            $this->setter($property->getName(), $value);
+                        } catch (\BadMethodCallException $e) {
+                            $this->setProperty($property->getName(), $value);
+                        }
                     }
 
                 } else {
                     $default = $defaults[$property->getName()];
 
                     if (gettype($default) == gettype($value)) {
-                        $this->set($property->getName(), $default);
+                        try {
+                            $this->setter($property->getName(), $default);
+                        } catch (\BadMethodCallException $e) {
+                            $this->setProperty($property->getName(), $default);
+                        }
                     } else {
 
                         if ($type->allowsNull()) {
-                            $this->set($property->getName(), null);
+                            $setValue = null;
                         } else if (!is_null($value)) {
-                            $this->set($property->getName(), $value);
+                            $setValue = $value;
                         }
 
+                        if (isset($setValue)) {
+                            try {
+                                $this->setter($property->getName(), $setValue);
+                            } catch (\BadMethodCallException $e) {
+                                $this->setProperty($property->getName(), $setValue);
+                            }
+                        }
                     }
                 }
             }
@@ -223,6 +257,7 @@ class Property
     }
 
     /**
+     * 타입 별 기본 값 설정
      * @param string $type
      * @return array|false|float|int|string|null
      */

@@ -7,7 +7,7 @@ use Illuminate\Support\Str;
 
 /**
  * 라라벨 연관배열 키의 문자열 제어를 위해
- * 라라벨 Arr, Str 파사드에 의존
+ * 라라벨 Arr, Str 파사드 활용
  */
 class ArrController
 {

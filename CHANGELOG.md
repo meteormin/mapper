@@ -1,6 +1,17 @@
 ## Change Log
 
-**last update: 2022.03.11**
+**last update: 2022.03.21**
+
+### 2022.03.21: <br>
+
+> v2.6.10
+
+**feat**
+
+- getter, setter가 없어도 기본값 할당과 toArray() 메서드를 통과할 수 있게 수정
+
+- 기존 snake_case 속성(변수)명 camelCase를 적용하여 코드 일관성 유지
+
 
 ### 2022.03.11: <br>
 

@@ -87,11 +87,11 @@ abstract class Entity implements Mapable, JsonSerializable
     {
         $model = $this->getIdentifier();
 
-        if (is_null($model)) {
-            return null;
+        if (class_exists($model)) {
+            return new $model;
         }
 
-        return new $model;
+        return null;
     }
 
     /**

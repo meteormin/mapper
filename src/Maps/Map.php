@@ -13,12 +13,12 @@ abstract class Map implements MapInterface
     /**
      * @var string|null
      */
-    protected ?string $dto_class;
+    protected ?string $dtoClass;
 
     /**
      * @var string|null
      */
-    protected ?string $entity_class;
+    protected ?string $entityClass;
 
     /**
      * @var string|null
@@ -35,8 +35,8 @@ abstract class Map implements MapInterface
         $this->id = $id;
         $map = get_class($this);
 
-        $this->dto_class = config("mapper.maps.{$map}.dto");
-        $this->entity_class = config("mapper.maps.{$map}.entity");
+        $this->dtoClass = config("mapper.maps.{$map}.dto");
+        $this->entityClass = config("mapper.maps.{$map}.entity");
     }
 
     /**
@@ -67,10 +67,10 @@ abstract class Map implements MapInterface
      */
     public function dtoToEntity(Dto $dto, Entity $entity): Entity
     {
-        $dto_class = $this->dto_class;
-        $entity_class = $this->entity_class;
+        $dtoClass = $this->dtoClass;
+        $entityClass = $this->entityClass;
 
-        if ($dto instanceof $dto_class && $entity instanceof $entity_class) {
+        if ($dto instanceof $dtoClass && $entity instanceof $entityClass) {
             $result = $this->toEntity($dto, $entity);
             if(is_array($result)){
                 $entity->map($result);
@@ -92,10 +92,10 @@ abstract class Map implements MapInterface
      */
     public function entityToDto(Entity $entity, Dto $dto): Dto
     {
-        $dto_class = $this->dto_class;
-        $entity_class = $this->entity_class;
+        $dtoClass = $this->dtoClass;
+        $entityClass = $this->entityClass;
 
-        if ($dto instanceof $dto_class && $entity instanceof $entity_class) {
+        if ($dto instanceof $dtoClass && $entity instanceof $entityClass) {
             $result = $this->toDto($entity, $dto);
             if(is_array($result)) {
                 $dto->map($result);

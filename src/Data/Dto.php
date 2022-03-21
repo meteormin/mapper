@@ -2,7 +2,6 @@
 
 namespace Miniyus\Mapper\Data;
 
-use ArrayAccess;
 use Miniyus\Mapper\Exceptions\DtoErrorException;
 use Miniyus\Mapper\Data\Contracts\Mapable;
 use Miniyus\Mapper\Data\Traits\ToEntity;
