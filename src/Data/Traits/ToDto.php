@@ -3,9 +3,13 @@
 
 namespace Miniyus\Mapper\Data\Traits;
 
+use JsonMapper_Exception;
 use Miniyus\Mapper\Data\Contracts\Mapable;
 use Miniyus\Mapper\Data\Dto;
+use Miniyus\Mapper\Exceptions\DtoErrorException;
+use Miniyus\Mapper\Exceptions\EntityErrorException;
 use Miniyus\Mapper\Facades\Mapper;
+use Miniyus\Mapper\MapperFactory;
 
 trait ToDto
 {
@@ -15,9 +19,16 @@ trait ToDto
      * @param string|null $dto
      * @param callable|Closure|string|null $callback
      * @return Dto|Mapable|null
+     * @throws JsonMapper_Exception
+     * @throws DtoErrorException
+     * @throws EntityErrorException
      */
     public function toDto(?string $dto = null, $callback = null): ?Dto
     {
-        return Mapper::map($this, $dto, $callback);
+        try {
+            return Mapper::map($this, $dto, $callback);
+        } catch (\Throwable $e) {
+            return MapperFactory::make()->map($this, $dto, $callback);
+        }
     }
 }

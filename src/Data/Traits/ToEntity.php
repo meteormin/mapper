@@ -3,9 +3,14 @@
 
 namespace Miniyus\Mapper\Data\Traits;
 
+use JsonMapper_Exception;
 use Miniyus\Mapper\Data\Contracts\Mapable;
 use Miniyus\Mapper\Data\Entity;
+use Miniyus\Mapper\Exceptions\DtoErrorException;
+use Miniyus\Mapper\Exceptions\EntityErrorException;
 use Miniyus\Mapper\Facades\Mapper;
+use Miniyus\Mapper\MapperFactory;
+use Throwable;
 
 trait ToEntity
 {
@@ -15,9 +20,16 @@ trait ToEntity
      * @param string|null $entity
      * @param callable|Closure|string|null $callback
      * @return Entity|Mapable|null
+     * @throws JsonMapper_Exception
+     * @throws DtoErrorException
+     * @throws EntityErrorException
      */
     public function toEntity(?string $entity = null, $callback = null): ?Entity
     {
-        return Mapper::map($this, $entity, $callback);
+        try {
+            return Mapper::map($this, $entity, $callback);
+        } catch (Throwable $e) {
+            return MapperFactory::make()->map($this, $entity, $callback);
+        }
     }
 }

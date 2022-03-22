@@ -110,7 +110,7 @@ class Mapper implements MapperInterface, Arrayable, Jsonable, JsonSerializable
                 throw new InvalidArgumentException(get_class($object) . ": 매칭되는 클래스를 찾을 수 없습니다. 'config/mapper.php' 파일을 확인해주세요.");
             }
 
-            $this->map = $this->makeMapClass($map, get_class($object), $entity);
+            $this->map = is_null($map) ? null : $this->makeMapClass($map, get_class($object), $entity);
             $this->entity = new $entity;
 
             return $this->toEntity($object, $this->entity, $callback);
@@ -130,7 +130,7 @@ class Mapper implements MapperInterface, Arrayable, Jsonable, JsonSerializable
                 throw new InvalidArgumentException(get_class($object) . ": 매칭되는 클래스를 찾을 수 없습니다. 'config/mapper.php' 파일을 확인해주세요.");
             }
 
-            $this->map = $this->makeMapClass($map, $dto, get_class($object));
+            $this->map = is_null($map) ? null : $this->makeMapClass($map, $dto, get_class($object));
             $this->dto = new $dto;
 
             return $this->toDto($object, $this->dto, $callback);

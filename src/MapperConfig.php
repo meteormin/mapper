@@ -4,11 +4,12 @@ namespace Miniyus\Mapper;
 
 use ArrayAccess;
 use Illuminate\Support\Arr;
+use Miniyus\Mapper\Data\Contracts\Configuration;
 
 /**
  * config/DataMapper.php의 데이터를 보다 쉽게 컨트롤하기 위한 클래스
  */
-class MapperConfig
+class MapperConfig implements Configuration
 {
     /**
      * config/mapper.php 파일에 지정되어 있는 Dto class 리스트
@@ -137,7 +138,7 @@ class MapperConfig
      */
     protected function matchByMaps(string $className): array
     {
-        return Arr::where($this->config['maps'], function ($value, $key) use ($className) {
+        return $this->filter(function ($value, $key) use ($className) {
             if ($key == $className) {
                 return true;
             }
@@ -216,5 +217,19 @@ class MapperConfig
             return $this->maps;
         }
         return $this->maps[$key];
+    }
+
+    /**
+     * @param string|array $keys
+     * @return bool
+     */
+    public function has($keys): bool
+    {
+        return Arr::has($this->config, $keys);
+    }
+
+    public function filter(callable $callback): array
+    {
+        return Arr::where($this->config, $callback);
     }
 }
