@@ -20,7 +20,7 @@ class MapperServiceProvider extends ServiceProvider
 
             $mapperConfig = $configRepository->get('mapper');
 
-            return Mapper::newInstance($mapperConfig);
+            return Mapper::newInstance($mapperConfig['maps']);
         });
 
         $this->app->alias(MapperInterface::class, 'mapper');
@@ -49,6 +49,6 @@ class MapperServiceProvider extends ServiceProvider
             __DIR__ . '/stubs/Map.stub' => base_path('stubs/Map.stub')
         ]);
 
-        $this->commands(\Miniyus\Mapper\Consonle\GenerateMap::class);
+        $this->commands(\Miniyus\Mapper\Console\GenerateMap::class);
     }
 }

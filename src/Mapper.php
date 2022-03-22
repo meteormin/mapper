@@ -77,6 +77,14 @@ class Mapper implements MapperInterface, Arrayable, Jsonable, JsonSerializable
     }
 
     /**
+     * @return MapperConfig
+     */
+    public function config(): MapperConfig
+    {
+        return $this->config;
+    }
+
+    /**
      * @param Data\Contracts\Mapable $object
      * @param string|null $class
      * @param null $callback
@@ -198,7 +206,7 @@ class Mapper implements MapperInterface, Arrayable, Jsonable, JsonSerializable
      */
     protected function link($obj): array
     {
-        $map = $this->config->findKeyByClass(get_class($obj));
+        $map = $this->config->findMapByClass(get_class($obj));
 
         if (is_null($map)) {
             return [
@@ -208,7 +216,7 @@ class Mapper implements MapperInterface, Arrayable, Jsonable, JsonSerializable
             ];
         }
 
-        ['dto' => $dto, 'entity' => $entity] = $this->config->findByAttribute($map);
+        ['dto' => $dto, 'entity' => $entity] = $this->config->findByMap($map);
 
         return [
             'entity' => $entity,

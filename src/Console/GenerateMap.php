@@ -1,8 +1,9 @@
 <?php
 
-namespace Miniyus\Mapper\Consonle;
+namespace Miniyus\Mapper\Console;
 
 use JsonMapper_Exception;
+use Miniyus\Mapper\Facades\Mapper;
 use Miniyus\Mapper\Generate\MakeClass;
 use Miniyus\Mapper\Generate\MapGenerator;
 use Illuminate\Console\Command;
@@ -66,7 +67,7 @@ class GenerateMap extends Command
     {
         $this->option('json');
 
-        $namespace = config('mapper.map_namespace');
+        $namespace = Mapper::config()->get('map_namespace');
 
         if ($this->option('json')) {
             $name = Str::of($this->option('json'))->basename('.json');

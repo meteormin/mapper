@@ -5,6 +5,7 @@ namespace Miniyus\Mapper\Data\Traits;
 use Miniyus\Mapper\Utils\ArrController;
 use Miniyus\Mapper\Utils\Property;
 use Illuminate\Contracts\Support\Arrayable;
+use Miniyus\Mapper\Facades\Mapper;
 
 /**
  * Trait Transformation
@@ -58,14 +59,16 @@ trait Transformation
     {
         $property = new Property($this);
 
-        if (config('mapper.transformation.case_style') == 'camel_case') {
+        $config = Mapper::config();
+
+        if ($config->get('transformation.case_style') == 'camel_case') {
             $attributes = ArrController::camelFromArray($property->toArray());
         } else {
             $attributes = ArrController::snakeFromArray($property->toArray());
         }
 
         if (is_null($allowNull)) {
-            $allowNull = config('mapper.transformation.allow_null');
+            $allowNull = $config->get('transformation.allow_null');
         }
 
         if (!$allowNull) {

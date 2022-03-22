@@ -2,6 +2,7 @@
 
 namespace Miniyus\Mapper;
 
+use ArrayAccess;
 use Illuminate\Support\Arr;
 
 /**
@@ -40,7 +41,7 @@ class MapperConfig
     {
         $this->config = $config;
 
-        foreach ($this->config as $key => $map) {
+        foreach ($this->config['maps'] as $key => $map) {
             $this->maps[] = $key;
             $this->entities[] = $map['entity'] ?? null;
             $this->dtos[] = $map['dto'] ?? null;
@@ -58,13 +59,23 @@ class MapperConfig
     }
 
     /**
+     * @param int|string|null $key
+     * @param mixed|null $default
+     * @return array|ArrayAccess|mixed
+     */
+    public function get($key, $default = null)
+    {
+        return Arr::get($this->config, $key, $default);
+    }
+
+    /**
      * find by key
      *
      * @param int $key
      *
      * @return array
      */
-    public function find(int $key): array
+    public function findMap(int $key): array
     {
         return [
             'map' => $this->getMap($key),
@@ -80,9 +91,9 @@ class MapperConfig
      *
      * @return string|null
      */
-    public function findKeyByClass(string $className): ?string
+    public function findMapByClass(string $className): ?string
     {
-        $found = $this->match($className);
+        $found = $this->matchByMaps($className);
 
         return collect($found)->keys()->first();
     }
@@ -95,13 +106,13 @@ class MapperConfig
      *
      * @return array|string|null
      */
-    public function findByAttribute($attributes, string $value = null)
+    public function findByMap($attributes, string $value = null)
     {
         $found = null;
         if (is_array($attributes)) {
             foreach ($attributes as $key => $attr) {
 
-                $value = $this->where($key, $attr);
+                $value = $this->whereIsMap($key, $attr);
 
                 if (is_array($value)) {
                     $found[$attr] = $value;
@@ -111,7 +122,7 @@ class MapperConfig
             }
             return $found;
         } else if (is_string($attributes)) {
-            return $this->where($attributes, $value);
+            return $this->whereIsMap($attributes, $value);
         }
 
         return null;
@@ -124,9 +135,9 @@ class MapperConfig
      *
      * @return array
      */
-    protected function match(string $className): array
+    protected function matchByMaps(string $className): array
     {
-        return Arr::where($this->config, function ($value, $key) use ($className) {
+        return Arr::where($this->config['maps'], function ($value, $key) use ($className) {
             if ($key == $className) {
                 return true;
             }
@@ -151,14 +162,14 @@ class MapperConfig
      *
      * @return string|string[]
      */
-    protected function where(string $key, string $attr = null)
+    protected function whereIsMap(string $key, string $attr = null)
     {
         if (is_numeric($key)) {
-            return $this->config[$attr];
+            return $this->config['maps'][$attr];
         }
 
         if (is_null($attr)) {
-            return $this->config[$key];
+            return $this->config['maps'][$key];
         }
 
         $getter = 'get' . ucfirst($attr);
@@ -176,9 +187,9 @@ class MapperConfig
     public function getDto(int $key = null)
     {
         if (is_null($key)) {
-            return (new static)->dtos;
+            return $this->dtos;
         }
-        return (new static)->dtos[$key];
+        return $this->dtos[$key];
     }
 
     /**
@@ -189,9 +200,9 @@ class MapperConfig
     public function getEntity(int $key = null)
     {
         if (is_null($key)) {
-            return (new static)->entities;
+            return $this->entities;
         }
-        return (new static)->entities[$key];
+        return $this->entities[$key];
     }
 
     /**
@@ -202,8 +213,8 @@ class MapperConfig
     public function getMap(int $key = null)
     {
         if (is_null($key)) {
-            return (new static)->maps;
+            return $this->maps;
         }
-        return (new static)->maps[$key];
+        return $this->maps[$key];
     }
 }
