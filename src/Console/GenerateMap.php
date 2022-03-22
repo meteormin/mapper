@@ -81,7 +81,7 @@ class GenerateMap extends Command
         } else {
             $name = \Str::studly($this->argument('name'));
             $mapClass = "$namespace\\$name";
-            $mapData = config("mapper.maps.$mapClass");
+            $mapData = Mapper::config()->get("mapper.maps.$mapClass");
             $mapData['map'] = null;
         }
 
