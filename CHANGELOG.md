@@ -4,6 +4,13 @@
 
 ### 2022.03.22: <br>
 
+> v2.7.1
+
+**feat**
+
+- generate map Mapper 관련 config 가져오는 코드를 Mapper Facade를 이용할 수 있게 수정
+- MapGenerator getter와 setter 생성하는 함수 ucfirst() -> Str::studly() 메서드로 변경
+
 > v2.7.0
 
 **feat**
@@ -11,7 +18,6 @@
 - Mapper facade 추가
 - Mapper 내부에 config() 헬퍼 함수 제거 하고 생성자를 통해 입력
 - Provider에서 의존성 주입 및 facade 별칭 추가 코드 작성
-
 
 ### 2022.03.21: <br>
 

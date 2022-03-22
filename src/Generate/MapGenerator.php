@@ -128,7 +128,7 @@ class MapGenerator extends Generator
      */
     protected function makeSetter(string $key): string
     {
-        return 'set' . ucfirst($key);
+        return 'set' . Str::studly($key);
     }
 
     /**
@@ -140,7 +140,7 @@ class MapGenerator extends Generator
      */
     protected function makeGetter(string $key): string
     {
-        return 'get' . ucfirst($key);
+        return 'get' . Str::studly($key);
     }
 
     /**

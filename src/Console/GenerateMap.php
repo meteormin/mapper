@@ -2,6 +2,7 @@
 
 namespace Miniyus\Mapper\Console;
 
+use Illuminate\Support\Str;
 use JsonMapper_Exception;
 use Miniyus\Mapper\Facades\Mapper;
 use Miniyus\Mapper\Generate\MakeClass;
@@ -72,14 +73,15 @@ class GenerateMap extends Command
         if ($this->option('json')) {
             $name = Str::of($this->option('json'))->basename('.json');
             $json = file_get_contents(config('make_class.json_path') . $this->option('json'));
-            if (is_null($json)) {
+
+            if (!$json) {
                 $this->error('file not found...');
                 return 1;
             }
 
             $mapData = json_decode($json);
         } else {
-            $name = \Str::studly($this->argument('name'));
+            $name = Str::studly($this->argument('name'));
             $mapClass = "$namespace\\$name";
             $mapData = Mapper::config()->get("mapper.maps.$mapClass");
             $mapData['map'] = null;
