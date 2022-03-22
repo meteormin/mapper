@@ -21,22 +21,13 @@ abstract class Map implements MapInterface
     protected ?string $entityClass;
 
     /**
-     * @var string|null
+     * @param string $dtoClass
+     * @param string $entityClass
      */
-    protected ?string $id;
-
-    /**
-     * construct
-     * config/mapper.tables에 해당 키로 매칭되는 크래스들을 찾는다.
-     * @param string|null $id table name(in config/mapper.maps)
-     */
-    public function __construct(?string $id = null)
+    public function __construct(string $dtoClass, string $entityClass)
     {
-        $this->id = $id;
-        $map = get_class($this);
-
-        $this->dtoClass = config("mapper.maps.{$map}.dto");
-        $this->entityClass = config("mapper.maps.{$map}.entity");
+        $this->dtoClass = $dtoClass;
+        $this->entityClass = $entityClass;
     }
 
     /**

@@ -36,9 +36,9 @@ class MapperConfig
      */
     protected array $config;
 
-    public function __construct()
+    public function __construct(array $config)
     {
-        $this->config = config("mapper.maps");
+        $this->config = $config;
 
         foreach ($this->config as $key => $map) {
             $this->maps[] = $key;
@@ -47,15 +47,14 @@ class MapperConfig
         }
     }
 
-
     /**
      * get all config infomation
      *
      * @return string[]
      */
-    public static function all(): array
+    public function all(): array
     {
-        return (new static)->config;
+        return $this->config;
     }
 
     /**
@@ -65,14 +64,12 @@ class MapperConfig
      *
      * @return array
      */
-    public static function find(int $key): array
+    public function find(int $key): array
     {
-        $config = new static;
-
         return [
-            'map' => $config->getMap($key),
-            'dto' => $config->getDto($key),
-            'entity' => $config->getEntity($key)
+            'map' => $this->getMap($key),
+            'dto' => $this->getDto($key),
+            'entity' => $this->getEntity($key)
         ];
     }
 
@@ -83,11 +80,9 @@ class MapperConfig
      *
      * @return string|null
      */
-    public static function findKeyByClass(string $className): ?string
+    public function findKeyByClass(string $className): ?string
     {
-        $config = new static;
-
-        $found = $config->match($className);
+        $found = $this->match($className);
 
         return collect($found)->keys()->first();
     }
@@ -100,14 +95,13 @@ class MapperConfig
      *
      * @return array|string|null
      */
-    public static function findByAttribute($attributes, string $value = null)
+    public function findByAttribute($attributes, string $value = null)
     {
-        $config = new static;
         $found = null;
         if (is_array($attributes)) {
             foreach ($attributes as $key => $attr) {
 
-                $value = $config->where($key, $attr);
+                $value = $this->where($key, $attr);
 
                 if (is_array($value)) {
                     $found[$attr] = $value;
@@ -117,7 +111,7 @@ class MapperConfig
             }
             return $found;
         } else if (is_string($attributes)) {
-            return $config->where($attributes, $value);
+            return $this->where($attributes, $value);
         }
 
         return null;

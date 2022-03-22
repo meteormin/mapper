@@ -2,6 +2,10 @@
 
 namespace Miniyus\Mapper\Data;
 
+use ArrayAccess;
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Support\Collection;
+use JsonSerializable;
 use Miniyus\Mapper\Data\Contracts\Mapable;
 use Illuminate\Support\Str;
 use TypeError;
@@ -180,5 +184,66 @@ abstract class Dynamic implements Mapable
     public function fromJson($json): Dynamic
     {
         return $this->fill(json_decode($json, true));
+    }
+
+    /**
+     * @param Arrayable|ArrayAccess|array|JsonSerializable $data
+     * @param $callback
+     * @return Mapable
+     */
+    public function map($data, $callback = null): Mapable
+    {
+        if (!is_null($callback)) {
+            $callbackResult = $callback($data, $this);
+            if (is_array($callbackResult)) {
+                return $this->fill($callbackResult);
+            }
+            return $this;
+        }
+
+
+        if ($data instanceof Arrayable) {
+            return $this->fill($data->toArray());
+        }
+
+        if ($data instanceof JsonSerializable) {
+            $jsonData = json_encode($data);
+            return $this->fill(json_decode($jsonData, true));
+        }
+
+        if (is_array($data) || $data instanceof ArrayAccess) {
+            return $this->fill($data);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Collection|array $data
+     * @param $callback
+     * @return array|Collection
+     */
+    public function mapList($data, $callback = null)
+    {
+        if (class_exists("\\Illuminate\\Support\\Collection")) {
+            $rsList = new Collection([]);
+        } else {
+            $rsList = [];
+        }
+
+        if (!is_null($callback)) {
+
+            foreach ($data as $item) {
+                $rsList[] = $callback($item, new $this);
+            }
+
+            return $rsList;
+        }
+
+        foreach ($data as $item) {
+            $rsList[] = (new $this)->map($item);
+        }
+
+        return $rsList;
     }
 }

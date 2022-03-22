@@ -55,12 +55,25 @@ class Mapper implements MapperInterface, Arrayable, Jsonable, JsonSerializable
     protected ?MapInterface $map;
 
     /**
+     * @var MapperConfig
+     */
+    protected MapperConfig $config;
+
+    /**
+     * @param array $config
+     */
+    public function __construct(array $config)
+    {
+        $this->config = new MapperConfig($config);
+    }
+
+    /**
      * Undocumented function
      * @return static
      */
-    public static function newInstance(): Mapper
+    public static function newInstance(array $config): Mapper
     {
-        return new static();
+        return new static($config);
     }
 
     /**
@@ -76,51 +89,61 @@ class Mapper implements MapperInterface, Arrayable, Jsonable, JsonSerializable
     {
         if ($object instanceof Dto) {
             $this->dto = $object;
+
+            $entity = $class;
+            $map = null;
+
+            // 입력 받은 타겟 클래스가 존재하지 않을 경우 config/mapper.php 에서 참조하여 객체를 연결 해준다.
             if (is_null($class)) {
                 ['entity' => $entity, 'map' => $map] = $this->link($object);
-            } else {
-                // 입력 받은 타겟 클래스가 존재하면, config/mapper를 참조하지 않는다.
-                $entity = $class;
-                $map = null;
             }
 
             if (is_null($entity)) {
                 throw new InvalidArgumentException(get_class($object) . ": 매칭되는 클래스를 찾을 수 없습니다. 'config/mapper.php' 파일을 확인해주세요.");
-            } else {
-                $entity = new $entity;
-                $map = is_null($map) ? $map : new $map;
             }
 
-            $this->entity = $entity;
-            $this->map = $map;
+            $this->map = $this->makeMapClass($map, get_class($object), $entity);
+            $this->entity = new $entity;
 
             return $this->toEntity($object, $this->entity, $callback);
 
         } else if ($object instanceof Entity) {
             $this->entity = $object;
+
+            $dto = $class;
+            $map = null;
+
+            // 입력 받은 타겟 클래스가 존재하지 않을 경우 config/mapper.php 에서 참조하여 객체를 연결 해준다.
             if (is_null($class)) {
                 ['dto' => $dto, 'map' => $map] = $this->link($object);
-            } else {
-                // 입력 받은 타겟 클래스가 존재하면, config/mapper를 참조하지 않는다.
-                $dto = $class;
-                $map = null;
             }
 
             if (is_null($dto)) {
                 throw new InvalidArgumentException(get_class($object) . ": 매칭되는 클래스를 찾을 수 없습니다. 'config/mapper.php' 파일을 확인해주세요.");
-            } else {
-                // 매칭되는 것이 있으면?
-                $dto = new $dto;
-                $map = is_null($map) ? $map : new $map;
             }
 
-            $this->dto = $dto;
-            $this->map = $map;
+            $this->map = $this->makeMapClass($map, $dto, get_class($object));
+            $this->dto = new $dto;
 
             return $this->toDto($object, $this->dto, $callback);
-        } else {
-            return $object->map(new $class, $callback);
         }
+
+        return $object->map(new $class, $callback);
+    }
+
+    /**
+     * @param string $mapClass
+     * @param string $dtoClass
+     * @param string $entityClass
+     * @return Map|null
+     */
+    protected function makeMapClass(string $mapClass, string $dtoClass, string $entityClass): ?Map
+    {
+        if (empty($mapClass) || empty($dtoClass) || empty($entityClass)) {
+            return null;
+        }
+
+        return new $mapClass($dtoClass, $entityClass);
     }
 
     /**
@@ -175,7 +198,7 @@ class Mapper implements MapperInterface, Arrayable, Jsonable, JsonSerializable
      */
     protected function link($obj): array
     {
-        $map = MapperConfig::findKeyByClass(get_class($obj));
+        $map = $this->config->findKeyByClass(get_class($obj));
 
         if (is_null($map)) {
             return [
@@ -185,7 +208,7 @@ class Mapper implements MapperInterface, Arrayable, Jsonable, JsonSerializable
             ];
         }
 
-        ['dto' => $dto, 'entity' => $entity] = MapperConfig::findByAttribute($map);
+        ['dto' => $dto, 'entity' => $entity] = $this->config->findByAttribute($map);
 
         return [
             'entity' => $entity,

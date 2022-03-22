@@ -11,8 +11,6 @@ use {{fullNameEntity}};
 class {{name}} extends Map
 {
     /**
-     * 코드에서 클래스들의 getter, setter 유효성 체크를 위해
-     *
      * @param {{dto}} $dto
      * @param {{entity}} $entity
      * @return {{entity}}
@@ -28,8 +26,6 @@ class {{name}} extends Map
     }
 
     /**
-     * 코드에서 클래스들의 getter, setter 유효성 체크를 위해
-     *
      * @param {{entity}} $entity
      * @param {{dto}} $dto
      * @return {{dto}}

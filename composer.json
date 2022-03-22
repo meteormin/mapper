@@ -28,5 +28,8 @@
         "Miniyus\\Mapper\\Provider\\MapperServiceProvider"
       ]
     }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5"
   }
 }

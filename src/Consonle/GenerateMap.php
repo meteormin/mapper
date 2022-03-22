@@ -1,6 +1,6 @@
 <?php
 
-namespace Miniyus\Mapper\Commands;
+namespace Miniyus\Mapper\Consonle;
 
 use JsonMapper_Exception;
 use Miniyus\Mapper\Generate\MakeClass;

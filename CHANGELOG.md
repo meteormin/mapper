@@ -1,6 +1,17 @@
 ## Change Log
 
-**last update: 2022.03.21**
+**last update: 2022.03.22**
+
+### 2022.03.22: <br>
+
+> v2.7.0
+
+**feat**
+
+- Mapper facade 추가
+- Mapper 내부에 config() 헬퍼 함수 제거 하고 생성자를 통해 입력
+- Provider에서 의존성 주입 및 facade 별칭 추가 코드 작성
+
 
 ### 2022.03.21: <br>
 

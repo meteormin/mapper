@@ -52,7 +52,8 @@ interface MapperInterface
     /**
      * new DataMapper instance
      *
+     * @param array $config
      * @return MapperInterface
      */
-    public static function newInstance(): MapperInterface;
+    public static function newInstance(array $config): MapperInterface;
 }
