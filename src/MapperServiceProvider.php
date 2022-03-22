@@ -20,7 +20,7 @@ class MapperServiceProvider extends ServiceProvider
 
             $mapperConfig = $configRepository->get('mapper');
 
-            return Mapper::newInstance($mapperConfig['maps']);
+            return Mapper::newInstance($mapperConfig);
         });
 
         $this->app->alias(MapperInterface::class, 'mapper');
